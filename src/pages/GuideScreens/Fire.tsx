@@ -1,68 +1,37 @@
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { Button, Card, Divider, Text } from 'react-native-paper';
 
 const Fire = () => {
-    const styles = StyleSheet.create({
-        container: {
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: 20,
-            backgroundColor: '#D9D9D9',
+    const navigation = useNavigation();
 
-        },
-        title: {
-            height: '10%',
-            fontSize: 30,
-            fontWeight: '900',
-            textAlign: 'center',
-            textAlignVertical: 'center',
-            backgroundColor: 'red',
-            borderBottomRightRadius: 50,
-            borderBottomLeftRadius: 50,
-            borderTopLeftRadius: 25,
-            borderTopRightRadius: 25,
-            marginBottom: 15,
-            color: 'white',
-
-        },
-        border: {
-            flex: 1,
-            borderWidth: 5,
-            borderColor: 'red',
-            padding: 10,
-            minWidth: '100%',
-            borderRadius: 20,
-        },
-        text: {
-            fontSize: 22,
-            fontWeight: 'bold',
-            marginBottom: 25,
-            textAlign: 'left',
-            textAlignVertical: 'top',
-            alignSelf: 'stretch',
-            flexWrap: 'wrap',
-            lineHeight: 30,
-
-        },
-    });
+    const goBack = () => {
+        navigation.goBack();
+    };
 
     return (
-        <View style={styles.container}>
-            <View>
-                <Text style={styles.title}>
-                    Yangın
-                </Text>
-                <ScrollView style={styles.border}>
-                    <Text style={styles.text}>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis dignissimos necessitatibus alias nobis molestiae nam odio nemo distinctio sequi esse soluta consectetur fugit iusto illo iste, recusandae natus. Numquam, ducimus.
-                        Dolorum consequatur consequuntur, labore repudiandae praesentium voluptatibus ex. Earum qui porro beatae aliquid blanditiis consectetur, iure nihil aliquam ex vitae vel ipsum temporibus unde. Laudantium corrupti alias numquam perferendis expedita?
-                        Incidunt alias ratione fugit laudantium recusandae hic temporibus ut, modi voluptas, blanditiis excepturi debitis labore qui numquam accusantium voluptates neque adipisci? Tempore ea ipsum optio. Quas fugiat repellendus voluptate aperiam.
+        <ScrollView style={{
+            width: '100%',
+            height: '100%',
+            backgroundColor: '#D9D9D9',
+        }}>
+            <Card style={{ width: '95%', alignSelf: 'center', margin: '5%', backgroundColor: 'red' }}>
+                <Card.Title titleVariant="titleLarge" titleStyle={{ textAlign: 'center', color: 'white' }} title="Yangın" />
+                <Divider style={{ height: 1, marginVertical: '1%' }} />
+                <Card.Content>
+                    <Text style={{ color: 'white', }} variant="bodyLarge">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Eveniet unde libero voluptatibus. Ea explicabo natus sed officia ipsam hic quibusdam in, harum exercitationem voluptates magni delectus doloremque, consequuntur aspernatur laborum.
+                        Voluptatem beatae molestias sapiente placeat et officia explicabo, illum distinctio ad quisquam odit autem reprehenderit expedita libero quam laborum recusandae aliquam praesentium cumque facere provident laboriosam odio. Voluptatibus, blanditiis porro?
+                        Eum at dolores quo eligendi deleniti consequuntur sit atque, sint sapiente est iusto hic? Porro sequi quidem nisi laudantium incidunt corporis iure, excepturi hic. Consectetur qui perspiciatis neque iusto praesentium.
+                        Pariatur nihil, beatae ea deserunt optio ipsam temporibus dolorem recusandae suscipit sequi tempora similique quidem accusantium delectus quas. A repellat obcaecati placeat architecto perferendis minus dolore accusantium distinctio eum quis.
+                        Possimus deleniti excepturi ad expedita accusamus quaerat obcaecati, sapiente fuga, odio hic distinctio laudantium corporis. Modi obcaecati nisi, voluptate, a tempore eaque explicabo ullam necessitatibus dolores eum incidunt blanditiis placeat?
                     </Text>
-                </ScrollView>
-            </View>
-
-        </View>
+                </Card.Content>
+                <Card.Actions>
+                    <Button mode='contained' onPress={goBack}>Geri Git</Button>
+                </Card.Actions>
+            </Card>
+        </ScrollView>
     );
 };
 

@@ -12,8 +12,9 @@ const Fire = () => {
     return (
         <ScrollView style={styles.container}>
             {data.map((history) => (
-                <History_Card key={history.history_id} color={color} history={history} />
-            ))}
+                history.type === 'Fire' ? (
+                    <History_Card key={history.id} color={color} history={history} />
+                ) : null))}
         </ScrollView>
     );
 };

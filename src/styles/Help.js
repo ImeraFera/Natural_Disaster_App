@@ -2,21 +2,23 @@ import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
 
-    container_top: {
-        flex: .5,
-        backgroundColor: '#D9D9D9',
+    container: {
+        flex: 1,
+        backgroundColor: '#d9d9d9',
         justifyContent: 'center',
-        alignItems: 'center',
-        padding: 10,
+        flexDirection: 'row',
     },
-    container_bottom: {
-        flex: .5,
-        backgroundColor: '#D9D9D9',
-        justifyContent: 'center',
+    col_left: {
+        flex: 1,
+        justifyContent: 'space-evenly',
         alignItems: 'center',
-        padding: 10,
+    },
+    col_right: {
+        flex: 1,
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+    },
 
-    },
 
 });
 

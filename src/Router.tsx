@@ -13,15 +13,20 @@ import GiveHelp from './pages/HelpScreens/Give_Help';
 import GetHelp from './pages/HelpScreens/Get_Help';
 import HelpDetails from './pages/HelpScreens/Help_Details';
 import GiveHelpForm from './pages/HelpScreens/Give_Help_Form';
+import MissingDeclaration from './pages/HelpScreens/Missing_Declaration';
+import DeclarationSettings from './pages/HelpScreens/Declaration_Settings';
+import DeclarationDetails from './pages/HelpScreens/Declaration_Details';
+
 
 import Disaster_History from './pages/HomeScreens/Disaster_History';
 import Emergency_Aid from './pages/HomeScreens/Emergency_Aid';
 import Assembly_Area from './pages/HomeScreens/Assembly_Area';
 import Help from './pages/HomeScreens/Help';
 import Guide from './pages/HomeScreens/Guide';
-import Contact from './pages/HomeScreens/Contact';
 
+import HistoryDetails from './pages/DisasterHistoryScreens/History_Details';
 import LandslideHistory from './pages/DisasterHistoryScreens/Landslide';
+import OtherHistory from './pages/DisasterHistoryScreens/Other';
 import FloodHistory from './pages/DisasterHistoryScreens/Flood';
 import EarthquakeHistory from './pages/DisasterHistoryScreens/Earthquake';
 import FireHistory from './pages/DisasterHistoryScreens/Fire';
@@ -62,6 +67,10 @@ const HelpStack = () => {
       <Stack.Screen name="HelpScreen" component={Help} options={{}} />
       <Stack.Screen name="GetHelpScreen" component={GetHelp} options={{}} />
       <Stack.Screen name="GiveHelpScreen" component={GiveHelp} options={{}} />
+      <Stack.Screen name="DeclarationSettingsScreen" component={DeclarationSettings} options={{}} />
+      <Stack.Screen name="MissingDeclarationScreen" component={MissingDeclaration} options={{}} />
+      <Stack.Screen name="DeclarationDetailsScreen" component={DeclarationDetails} options={{}} />
+
       <Stack.Screen
         name="HelpDetailsScreen"
         component={HelpDetails}
@@ -110,6 +119,16 @@ const DisasterHistoryStack = () => {
       <Stack.Screen
         name="LandslideHistoryScreen"
         component={LandslideHistory}
+        options={{}}
+      />
+      <Stack.Screen
+        name="OtherHistoryScreen"
+        component={OtherHistory}
+        options={{}}
+      />
+      <Stack.Screen
+        name="HistoryDetailsScreen"
+        component={HistoryDetails}
         options={{}}
       />
     </Stack.Navigator>
@@ -171,7 +190,7 @@ const App = () => {
           drawerStyle: {
             paddingTop: 10,
             paddingBottom: 10,
-            backgroundColor: 'red',
+            backgroundColor: '#E30014',
             width: '80%',
           },
           drawerActiveBackgroundColor: 'white',

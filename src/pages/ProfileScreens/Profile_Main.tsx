@@ -1,9 +1,12 @@
 import { ScrollView, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '../../styles/Profile_Main';
 import { Button, Dialog, Card, IconButton, Text, TextInput, PaperProvider, Portal, MD3Colors } from 'react-native-paper';
 import DatePicker from 'react-native-date-picker';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { Picker } from '@react-native-picker/picker';
+import iller from '../../tempData/iller.json';
+import ilceler from '../../tempData/ilceler.json';
 
 const Profile_Main = () => {
 
@@ -13,10 +16,21 @@ const Profile_Main = () => {
     const [adres, setadres] = useState();
     const [il, setil] = useState();
     const [ilce, setilce] = useState();
-
+    const [filteredIlceler, setFilteredIlceler] = useState([]);
+    const [mail, setmail] = useState('');
     const [dogumTarihi, setdogumTarihi] = useState(new Date());
     const [open, setOpen] = useState(false);
     const [kullaniciResmi, setkullaniciResmi] = useState(null);
+
+    useEffect(() => {
+        if (il) {
+            const ilId = iller.data.find((city) => city.name === il)?.id;
+            const filtered = ilceler.data.filter((district) => district.provinceId === ilId);
+            setFilteredIlceler(filtered);
+        } else {
+            setFilteredIlceler([]);
+        }
+    }, [il]);
 
     const options = {
         mediaType: 'photo',
@@ -59,14 +73,14 @@ const Profile_Main = () => {
                         <IconButton
                             icon="camera"
                             mode="outlined"
-                            iconColor={MD3Colors.error50}
+                            iconColor="#5A89FF"
                             size={50}
                             onPress={kameraAc}
                         />
                         <IconButton
                             icon="image-area"
                             mode="outlined"
-                            iconColor={MD3Colors.error50}
+                            iconColor="#5A89FF"
                             size={50}
                             onPress={resimSec}
                         />
@@ -92,26 +106,38 @@ const Profile_Main = () => {
                     <Card.Content style={{ marginVertical: '2%', padding: 5 }} >
                         <TextInput
                             label="Ad-Soyad"
-                            disabled={true}
                             value={adSoyad}
                             inputMode="text"
-                            mode="outlined" style={{ backgroundColor: 'white', marginBottom: 5 }} />
+                            right={<TextInput.Icon
+                                onPress={() => setOpen(true)}
+                                icon="rename-box" />}
+                            activeOutlineColor="#5A89FF"
+                            mode="outlined"
+                            style={styles.input}
+                        />
 
                         <TextInput
                             label="T.C No"
-                            disabled={true}
                             value={tcNo}
+                            right={<TextInput.Icon
+                                onPress={() => setOpen(true)}
+                                icon="card-account-details" />}
                             inputMode="decimal"
-                            mode="outlined" style={{ backgroundColor: 'white', marginBottom: 5 }} />
+                            activeOutlineColor="#5A89FF"
+                            mode="outlined"
+                            style={styles.input}
+                        />
                         <TextInput
                             label="Doğum Tarihi"
+                            activeOutlineColor="#5A89FF"
 
                             right={<TextInput.Icon
                                 onPress={() => setOpen(true)}
                                 icon="calendar" />}
                             editable={false}
                             value={dogumTarihi.toLocaleDateString()}
-                            mode="outlined" style={{ backgroundColor: 'white', marginBottom: 5 }} />
+                            mode="outlined"
+                            style={styles.input} />
                         <DatePicker
                             modal
                             open={open}
@@ -127,30 +153,66 @@ const Profile_Main = () => {
                         />
                         <TextInput
                             label="Telefon Numarası"
+                            activeOutlineColor="#5A89FF"
+                            right={<TextInput.Icon
+                                icon="phone" />}
                             value={telefonNo}
                             inputMode="numeric"
                             maxLength={10}
-                            mode="outlined" style={{ backgroundColor: 'white', marginBottom: 5 }} />
+                            placeholder="Telefon Numaranızı Başında 0 Olmadan Giriniz."
+                            mode="outlined"
+                            style={styles.input}
+                        />
+                        <TextInput
+                            label="Email"
+                            activeOutlineColor="#5A89FF"
+                            right={<TextInput.Icon
+                                icon="email" />}
+                            value={telefonNo}
+                            inputMode="email"
+                            maxLength={10}
+                            placeholder="Email Adresinizi Giriniz."
+                            mode="outlined"
+                            style={styles.input}
+                        />
                         <TextInput
                             label="Adres"
+                            activeOutlineColor="#5A89FF"
+                            right={<TextInput.Icon
+                                icon="home-map-marker" />}
                             value={adres}
                             inputMode="text"
                             numberOfLines={5}
-                            mode="outlined" style={{ backgroundColor: 'white', marginBottom: 5 }} />
-                        <TextInput
-                            label="İl"
-                            value={il}
-                            inputMode="text"
-                            numberOfLines={5}
-                            mode="outlined" style={{ backgroundColor: 'white', marginBottom: 5 }} />
-                        <TextInput
-                            label="İl"
-                            value={ilce}
-                            inputMode="text"
-                            numberOfLines={5}
-                            mode="outlined" style={{ backgroundColor: 'white', marginBottom: 5 }} />
+                            mode="outlined"
+                            style={styles.input}
+                        />
+
+                        <Picker
+                            mode="dialog"
+                            selectedValue={il}
+                            onValueChange={(item) => {
+                                setil(item);
+                                setilce(null);
+                            }}
+                        >
+                            <Picker.Item label="Lütfen Yaşadığınız İli Seçiniz" value={null} />
+                            {iller.data.map((city) => (
+                                <Picker.Item key={city.id} label={city.name} value={city.name} />
+                            ))}
+                        </Picker>
+                        <Picker
+                            mode="dialog"
+                            selectedValue={ilce}
+                            onValueChange={(item) => setilce(item)}
+                            enabled={filteredIlceler.length > 0}
+                        >
+                            <Picker.Item label="Lütfen Yaşadığınız İlçeyi Seçiniz" value={null} />
+                            {filteredIlceler.map((city) => (
+                                <Picker.Item key={city.id} label={city.name} value={city.name} />
+                            ))}
+                        </Picker>
                     </Card.Content>
-                    <Card.Actions>
+                    <Card.Actions style={{ alignSelf: 'center', margin: '1%' }}>
                         <Button style={{ backgroundColor: '#5A89FF' }}
                             mode="contained"
                             onPress={() => console.log('kaydedildi')}

@@ -15,6 +15,7 @@
     "@react-navigation/drawer": "^7.0.0-alpha.21",
     "@react-navigation/native": "^7.0.0-alpha.18",
     "@react-navigation/stack": "^7.0.0-alpha.20",
+    "axios": "^1.7.2",
     "react": "18.2.0",
     "react-native": "0.74.1",
     "react-native-country-flag": "^2.0.2",

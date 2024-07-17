@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import React from 'react';
 import Home_Card from '../../Components/Home_Card';
 import styles from '../../styles/Disaster_History';
@@ -15,6 +15,12 @@ const Disaster_History = () => {
             <Home_Card card_name="Heyelan" card_img={require('../../img/heyelan.png')} card_color="#895914" card_link="LandslideHistoryScreen" />
 
             <Home_Card card_name="Yangın" card_img={require('../../img/yangin.png')} card_color="red" card_link="FireHistoryScreen" />
+
+            <Home_Card card_name="Diğer" card_img={require('../../img/diger.png')} card_color="#3E4466" card_link="OtherHistoryScreen" />
+
+
+
+
         </View>
     );
 };

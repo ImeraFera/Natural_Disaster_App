@@ -1,57 +1,114 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, TouchableOpacity, Alert } from 'react-native';
 import MapView, { Marker, Polygon } from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 import styles from '../../styles/Assembly_Area';
+import { Button, Text } from 'react-native-paper';
+import axios from 'axios';
+
 
 const Assembly_Area = () => {
-    const [currentRegion, setCurrentRegion] = useState({
-        latitude: 39.925533,
-        longitude: 32.866287,
-        latitudeDelta: 20,
+
+
+    const [region, setRegion] = useState({
+        latitude: 39.9334,
+        longitude: 35.5,
+        latitudeDelta: 15,
         longitudeDelta: 20,
     });
 
-    const getCurrentLocation = () => {
+    const [userLocation, setUserLocation] = useState(null);
+    const mapRef = useRef(null);
+
+    const findLocation = () => {
         Geolocation.getCurrentPosition(
-            position => {
+            async position => {
                 const { latitude, longitude } = position.coords;
-                setCurrentRegion({
+                console.log('Current Location:', latitude, longitude);
+
+                const newRegion = {
                     latitude,
                     longitude,
-                    latitudeDelta: 0.1,
-                    longitudeDelta: 0.1,
-                });
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
+                };
+
+                setRegion(newRegion);
+                setUserLocation({ latitude, longitude });
+                mapRef.current.animateToRegion(newRegion, 1000);
+
+                const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`;
+
+                try {
+                    const response = await axios.get(url);
+                    const address = response.data.address;
+                    console.log('Address:', address);
+
+                    const city = address.city || address.town || address.village;
+                    const district = address.state_district || address.county || address.state;
+                    const neighborhood = address.suburb || address.neighbourhood || address.hamlet;
+
+                    console.log('City:', city);
+                    console.log('District:', district);
+                    console.log('Neighborhood:', neighborhood);
+                } catch (error) {
+                    console.error('Geocoding error:', error);
+                    Alert.alert('Error', 'Failed to get address information: ' + error.message);
+                }
             },
-            error => {
-                Alert.alert('Error', 'Konum alınamadı.');
-                console.error(error.message);
-            },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+            error => Alert.alert('Error', 'Failed to get current location: ' + error.message),
+            { enableHighAccuracy: true, timeout: 30000, maximumAge: 3600000 }
         );
     };
+
+
+    // const findLocation = () => {
+    //     Geolocation.getCurrentPosition(
+    //         position => {
+    //             const { latitude, longitude } = position.coords;
+    //             console.log('Current Location:', latitude, longitude);
+
+    //             const newRegion = {
+    //                 latitude,
+    //                 longitude,
+    //                 latitudeDelta: 0.02,
+    //                 longitudeDelta: 0.02,
+    //             };
+
+    //             setRegion(newRegion);
+    //             setUserLocation({ latitude, longitude });
+    //             mapRef.current.animateToRegion(newRegion, 1000);
+    //         },
+    //         error => Alert.alert('Error', 'Failed to get current location: ' + error.message),
+    //         { enableHighAccuracy: true, timeout: 30000, maximumAge: 3600000 }
+    //     );
+    // };
 
     return (
         <View style={styles.container}>
             <View style={styles.top_container}>
-                <Text style={styles.title}>Toplanma Alanları</Text>
-                <TouchableOpacity
-                    style={{ backgroundColor: 'green', padding: 10, borderRadius: 5 }}
-                    onPress={getCurrentLocation}>
-                    <Text style={{ color: 'white', fontSize: 20 }}>Konum Bul</Text>
-                </TouchableOpacity>
+                <Text variant="titleLarge" style={{ color: 'red', fontWeight: 'bold', marginTop: '2%' }}>Toplanma Alanları</Text>
+                <Button style={{ backgroundColor: 'green' }} textColor='white' onPress={findLocation}>
+                    Konumumu Bul
+                </Button>
             </View>
-            <View style={styles.map_container}>
-                <MapView style={styles.map} region={currentRegion}>
-                    <Marker
-                        coordinate={{ latitude: currentRegion.latitude, longitude: currentRegion.longitude }}
-                        title="Buradayım"
-                        description="Bu benim konumum"
-                    />
+
+            <View style={styles.bottom_container}>
+                <MapView
+                    ref={mapRef}
+                    style={{ width: '100%', height: '100%' }}
+                    initialRegion={region}
+                >
+                    {userLocation && (
+                        <Marker
+                            coordinate={userLocation}
+                            title="My Location"
+                            description="Here is where you are"
+                        />
+                    )}
                 </MapView>
             </View>
         </View>
     );
 };
-
 export default Assembly_Area;

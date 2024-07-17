@@ -6,10 +6,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#D9D9D9',
     },
-    input: {
-        backgroundColor: 'white',
-        marginBottom: 5,
-    },
 
 });
 export default styles;

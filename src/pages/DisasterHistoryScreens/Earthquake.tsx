@@ -12,8 +12,9 @@ const Earthquake = () => {
     return (
         <ScrollView style={styles.container}>
             {data.map((history) => (
-                <History_Card key={history.history_id} color={color} history={history} />
-            ))}
+                history.type === 'Earthquake' ? (
+                    <History_Card key={history.id} color={color} history={history} />
+                ) : null))}
         </ScrollView>
     );
 };

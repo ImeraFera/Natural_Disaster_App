@@ -6,31 +6,22 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
         backgroundColor: '#D9D9D9',
-        justifyContent: 'center',
         alignItems: 'center',
     },
-    top_container: {
-        flex: 0.1,
+    bottom_container: {
+        flex: 0.8,
+        width: '100%',
+        height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    title: {
-        color: 'red',
-        fontSize: 25,
-        fontWeight: 'bold'
     },
 
-    map_container: {
-        flex: 1,
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
+    top_container: {
+        flex: 0.2,
         alignItems: 'center',
-    },
-    map: {
-        width: '100%',
-        height: '100%',
+        justifyContent: 'space-around',
     }
+
 });
 
 export default styles;
