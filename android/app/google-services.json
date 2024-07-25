@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "235046562727",
+    "project_id": "bitirme-projesi-29586",
+    "storage_bucket": "bitirme-projesi-29586.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:235046562727:android:40d1c5bcbc1738d5492482",
+        "android_client_info": {
+          "package_name": "com.paper"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPDIhepKmajUB4sYQFzDAYieLmpnUe7lU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

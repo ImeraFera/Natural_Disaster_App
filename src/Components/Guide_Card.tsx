@@ -2,17 +2,19 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 import React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
-import { Button, Card } from 'react-native-paper';
+import { Card } from 'react-native-paper';
 
 
-const Home_Card = (props) => {
-    const { card_name, card_img, card_color, card_link, card_content } = props;
+const Guide_Card = (props) => {
+    const { card_link, card_color, card_img, card_name, card_content } = props;
     const navigation = useNavigation();
 
     const goTo = () => {
-        navigation.navigate(card_link);
+        navigation.navigate(card_link, {
+            content: card_content,
+            title: card_name,
+        });
     };
-
 
     return (
         <TouchableOpacity onPress={goTo} >
@@ -26,4 +28,4 @@ const Home_Card = (props) => {
     );
 };
 
-export default Home_Card;
+export default Guide_Card;
