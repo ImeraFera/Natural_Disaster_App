@@ -1,18 +1,26 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import React from 'react';
 import History_Card from '../../Components/History_Card';
 import styles from '../../styles/Histories';
 import data from '../../tempData/data';
+import { useRoute } from '@react-navigation/native';
+import { Text } from 'react-native-paper';
 
 const Other = () => {
 
     const color = '#3E4466';
+    const route = useRoute();
+
+    const { data } = route.params;
+    let otherList = data.filter((disaster: { type: string; }) => disaster.type == 'Other');
     return (
         <ScrollView style={styles.container}>
-            {data.map((history) =>
-                history.type === 'Other' ? (
-                    <History_Card key={history.id} color={color} history={history} />
-                ) : null
+            {otherList.length != 0 ? (
+                otherList.map((history: { index: any }, index: number) => (
+                    <History_Card key={index} color={color} history={history} />
+                ))
+            ) : (
+                <Text variant='titleLarge' style={{ color: 'red', textAlign: 'center' }}>Listelenecek Öge Yok.</Text>
             )}
         </ScrollView>
     );

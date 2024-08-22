@@ -1,6 +1,5 @@
 const data = [
     {
-        id: 1,
         type: 'Landslide',
         date: '2021-01-01',
         region: 'US',
@@ -8,7 +7,6 @@ const data = [
         name: 'Oso Landslide',
     },
     {
-        id: 2,
         type: 'Flood',
         date: '2021-02-15',
         region: 'CA',
@@ -16,15 +14,13 @@ const data = [
         name: 'Red River Flood',
     },
     {
-        id: 3,
         type: 'Earthquake',
         date: '2021-03-10',
         region: 'JP',
         desc: 'A powerful earthquake struck the region, causing widespread destruction. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Assumenda, odit a? Vitae delectus fugiat similique doloribus error quia nemo asperiores expedita, sed architecto temporibus, optio mollitia pariatur natus perspiciatis amet!',
-        name: 'Great East Japan  Earthquake',
+        name: 'Great East Japan Earthquake',
     },
     {
-        id: 4,
         type: 'Flood',
         date: '2021-04-05',
         region: 'MX',
@@ -32,7 +28,6 @@ const data = [
         name: 'Hurricane Wilma',
     },
     {
-        id: 5,
         type: 'Other',
         date: '2021-05-20',
         region: 'AU',
@@ -40,7 +35,6 @@ const data = [
         name: 'Black Saturday Bushfires',
     },
     {
-        id: 6,
         type: 'Other',
         date: '2021-06-25',
         region: 'US',
@@ -48,7 +42,6 @@ const data = [
         name: 'Joplin Tornado',
     },
     {
-        id: 7,
         type: 'Earthquake',
         date: '2021-07-30',
         region: 'ID',
@@ -56,7 +49,6 @@ const data = [
         name: 'Indian Ocean Earthquake',
     },
     {
-        id: 8,
         type: 'Other',
         date: '2021-08-15',
         region: 'ZA',
@@ -64,7 +56,6 @@ const data = [
         name: 'Cape Town Water Crisis',
     },
     {
-        id: 9,
         type: 'Other',
         date: '2021-09-10',
         region: 'RU',
@@ -72,7 +63,6 @@ const data = [
         name: 'Great Blizzard of 1888',
     },
     {
-        id: 10,
         type: 'Other',
         date: '2021-10-05',
         region: 'IS',
@@ -80,7 +70,6 @@ const data = [
         name: 'Eyjafjallajökull Eruption',
     },
     {
-        id: 11,
         type: 'Earthquake',
         date: '2021-11-01',
         region: 'CL',
@@ -88,7 +77,6 @@ const data = [
         name: 'Valdivia Earthquake',
     },
     {
-        id: 12,
         type: 'Flood',
         date: '2021-12-10',
         region: 'DE',
@@ -96,7 +84,6 @@ const data = [
         name: 'European Floods of 2002',
     },
     {
-        id: 13,
         type: 'Other',
         date: '2022-01-15',
         region: 'BR',
@@ -104,7 +91,6 @@ const data = [
         name: 'Amazon Fires',
     },
     {
-        id: 14,
         type: 'Landslide',
         date: '2022-02-20',
         region: 'IN',
@@ -112,7 +98,6 @@ const data = [
         name: 'Malin Landslide',
     },
     {
-        id: 15,
         type: 'Earthquake',
         date: '2022-03-05',
         region: 'TR',
@@ -120,7 +105,6 @@ const data = [
         name: 'İzmit Earthquake',
     },
     {
-        id: 16,
         type: 'Flood',
         date: '2022-04-10',
         region: 'BD',
@@ -128,7 +112,6 @@ const data = [
         name: 'Bangladesh Floods',
     },
     {
-        id: 17,
         type: 'Landslide',
         date: '2022-05-15',
         region: 'NP',
@@ -136,7 +119,6 @@ const data = [
         name: 'Jure Landslide',
     },
     {
-        id: 18,
         type: 'Other',
         date: '2022-06-20',
         region: 'US',
@@ -144,12 +126,12 @@ const data = [
         name: 'Camp Fire',
     },
     {
-        id: 19,
         type: 'Earthquake',
         date: '2022-07-25',
         region: 'NZ',
         desc: 'A strong earthquake struck, causing damage to infrastructure and homes. Lorem ipsum dolor sit, amet consectetur',
         name: 'Camp Fire',
-    }];
+    }
+];
 
 export default data;

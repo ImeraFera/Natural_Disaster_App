@@ -4,6 +4,9 @@ import { Picker } from '@react-native-picker/picker';
 import DatePicker from 'react-native-date-picker';
 import { TextInput, Text, Checkbox, Button, Switch } from 'react-native-paper';
 import styles from '../../styles/GetHelp';
+import database from '@react-native-firebase/database';
+
+
 
 const Declaration_Settings = () => {
 
@@ -19,6 +22,33 @@ const Declaration_Settings = () => {
     const [open, setOpen] = useState(false);
     const [isChecked, setIsChecked] = useState(false);
     const [rewardAmount, setRewardAmount] = useState('');
+
+
+    const handleSubmit = () => {
+        const data = {
+            name,
+            gender,
+            age,
+            location,
+            details,
+            tel,
+            email,
+            homeAdress,
+            date: date.toISOString(),
+            rewardAmount: isChecked ? rewardAmount : null
+        };
+
+        database().ref('declarations/');
+    };
+
+    const sendData = (data) => {
+
+        const dataObj = {
+            ...data,
+            owner: "",
+        }
+
+    }
 
     return (
         <View style={styles.container}>
@@ -167,7 +197,7 @@ const Declaration_Settings = () => {
                         </View>
                     )}
                     <View style={styles.button}>
-                        <Button mode="contained" buttonColor="#E30014" onPress={() => console.log('Pressed')}>
+                        <Button mode="contained" buttonColor="#E30014" onPress={handleSubmit}>
                             GÖNDER
                         </Button>
                     </View>

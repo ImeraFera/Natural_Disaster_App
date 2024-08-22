@@ -6,15 +6,13 @@ import { Card } from 'react-native-paper';
 
 
 const Disaster_Card = (props) => {
-    const { card_link, card_color, card_img, card_name, card_content } = props;
+    const { card_link, card_color, card_img, card_name, data } = props;
     const navigation = useNavigation();
 
     const goTo = () => {
-        navigation.navigate(card_link, {
-            content: card_content,
-            title: card_name,
-        });
+        navigation.navigate(card_link, { data });
     };
+
 
     return (
         <TouchableOpacity onPress={goTo} >
