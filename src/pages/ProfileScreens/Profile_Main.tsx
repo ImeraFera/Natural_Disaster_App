@@ -109,7 +109,6 @@ const Profile_Main = () => {
                             value={adSoyad}
                             inputMode="text"
                             right={<TextInput.Icon
-                                onPress={() => setOpen(true)}
                                 icon="rename-box" />}
                             activeOutlineColor="#5A89FF"
                             mode="outlined"
@@ -120,7 +119,6 @@ const Profile_Main = () => {
                             label="T.C No"
                             value={tcNo}
                             right={<TextInput.Icon
-                                onPress={() => setOpen(true)}
                                 icon="card-account-details" />}
                             inputMode="decimal"
                             activeOutlineColor="#5A89FF"
@@ -130,11 +128,10 @@ const Profile_Main = () => {
                         <TextInput
                             label="Doğum Tarihi"
                             activeOutlineColor="#5A89FF"
-
                             right={<TextInput.Icon
                                 onPress={() => setOpen(true)}
                                 icon="calendar" />}
-                            editable={false}
+                            editable={true}
                             value={dogumTarihi.toLocaleDateString()}
                             mode="outlined"
                             style={styles.input} />

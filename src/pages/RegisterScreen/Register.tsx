@@ -4,9 +4,11 @@ import { Image } from 'react-native-elements';
 import Register_Card from '../../Components/Register_Card';
 import styles from '../../styles/Register';
 import { Card } from 'react-native-paper';
-import Login_Card from '../../Components/Login_Card';
 
 const Register = () => {
+
+
+
     return (
         <View style={styles.container}>
             <Card mode="contained" style={{ width: '50%', padding: 10, backgroundColor: '#D9D9D9' }}>
