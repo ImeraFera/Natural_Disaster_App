@@ -9,56 +9,33 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import database from '@react-native-firebase/database';
 import Toast from 'react-native-toast-message';
-
+import { Formik } from 'formik';
 
 const Login_Card = () => {
     const navigation = useNavigation();
-
-    const [mail, setMail] = React.useState('');
-    const [sifre, setSifre] = React.useState('');
     const [beniUnutma, setBeniUnutma] = React.useState(false);
-    const showToast = (type, text1, text2) => {
-        return new Promise((resolve) => {
+    const handleLogin = async (values) => {
+        const { mail, password } = values;
+        try {
+            await auth().signInWithEmailAndPassword(mail, password);
             Toast.show({
-                type,
+                type: 'success',
                 position: 'top',
-                text1,
-                text2,
-                onHide: resolve,
+                text1: 'Giriş Başarılı',
+                text2: 'Başarıyla giriş yaptınız.',
             });
-        });
-    };
-
-    const login = async () => {
-
-        if (!sifre || !mail) {
+            return navigation.navigate('Home_Screen');
+        } catch (error) {
             Toast.show({
                 type: 'error',
                 position: 'top',
-                text1: 'Hata',
-                text2: 'Tüm Alanları Doldurunuz!',
+                text1: 'Giriş Başarısız',
+                text2: 'Mail veya şifreniz yanlış',
             });
-            return;
         }
 
 
-        try {
-
-            await auth().signInWithEmailAndPassword(mail, sifre);
-            console.log('giris basarili');
-
-            setMail('');
-            setSifre('');
-            await showToast('success', 'İşlem Başarılı', 'Giriş Yapıldı.')
-            return navigation.navigate('Home_Screen');
-
-        } catch (error) {
-            console.log(error);
-
-        }
-
-
-    };
+    }
 
     const sifremiUnuttum = () => {
         console.log('Şifremi Unuttum butonuna tıklandı');
@@ -74,40 +51,57 @@ const Login_Card = () => {
         <>
 
             <Card style={{ width: '90%' }}>
-                <Card.Content>
-                    <TextInput
-                        style={styles.input}
-                        mode="outlined"
-                        label="Email"
-                        activeOutlineColor="red"
-                        value={mail}
-                        onChangeText={text => setMail(text)}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        mode="outlined"
-                        label="Şifre"
-                        secureTextEntry={true}
-                        activeOutlineColor="red"
-                        value={sifre}
-                        onChangeText={text => setSifre(text)}
-                    />
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Checkbox
-                            status={beniUnutma ? 'checked' : 'unchecked'}
-                            onPress={() => setBeniUnutma(!beniUnutma)}
-                            color="red" />
-                        <Text variant="labelLarge" style={{ textAlign: 'left' }}>Beni Hatırla</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text variant="labelSmall">Hesabın Yok Mu?</Text>
-                        <Button onPress={goToRegister} labelStyle={{}} mode="text" textColor="red">Kayıt Ol!</Button>
-                    </View>
-                </Card.Content>
-                <Card.Actions style={{ alignSelf: 'center' }}>
-                    <Button
-                        onPress={login} mode="contained" buttonColor="red">GİRİŞ YAP</Button>
-                </Card.Actions>
+
+                <Formik
+                    onSubmit={handleLogin}
+                    initialValues={{ mail: '', password: '' }}
+                >
+                    {
+                        ({ handleChange, handleSubmit, values }) => (
+                            <>
+                                <Card.Content>
+                                    <TextInput
+                                        style={styles.input}
+                                        mode="outlined"
+                                        label="Email"
+                                        activeOutlineColor="red"
+                                        value={values.mail}
+                                        onChangeText={handleChange('mail')}
+                                    />
+                                    <TextInput
+                                        style={styles.input}
+                                        mode="outlined"
+                                        label="Şifre"
+                                        secureTextEntry={true}
+                                        activeOutlineColor="red"
+                                        value={values.password}
+                                        onChangeText={handleChange('password')}
+                                    />
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Checkbox
+                                            status={beniUnutma ? 'checked' : 'unchecked'}
+                                            onPress={() => setBeniUnutma(!beniUnutma)}
+                                            color="red" />
+                                        <Text variant="labelLarge" style={{ textAlign: 'left' }}>Beni Hatırla</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Text variant="labelSmall">Hesabın Yok Mu?</Text>
+                                        <Button onPress={goToRegister} labelStyle={{}} mode="text" textColor="red">Kayıt Ol!</Button>
+                                    </View>
+                                </Card.Content>
+                                <Card.Actions style={{ alignSelf: 'center' }}>
+                                    <Button
+                                        onPress={handleSubmit} mode="contained" buttonColor="red">GİRİŞ YAP</Button>
+                                </Card.Actions>
+                            </>
+
+                        )
+                    }
+                </Formik>
+
+
+
+
             </Card>
 
         </>

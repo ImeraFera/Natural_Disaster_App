@@ -191,9 +191,9 @@ const App = () => {
     return () => unsubscribe();
   }, []);
 
+
   return (
     <>
-
       <NavigationContainer>
         <Drawer.Navigator
           initialRouteName="Home"
@@ -227,7 +227,7 @@ const App = () => {
         >
           <Drawer.Screen
             name="Home_Screen"
-            component={Home}
+            component={(props) => <Home {...props} isActive={user} />}
             options={{
               title: 'Anasayfa',
               drawerIcon: ({ focused }) => {
@@ -258,7 +258,8 @@ const App = () => {
               },
             }}
           />
-          <Drawer.Screen
+
+          {user ? (<Drawer.Screen
             name="ProfileMain_Screen"
             component={ProfileStack}
             options={{
@@ -268,7 +269,8 @@ const App = () => {
                 return createIcon('user-gear', iconColor);
               },
             }}
-          />
+          />) : null}
+
           <Drawer.Screen
             name="Guide_Screen"
             component={GuideStack}

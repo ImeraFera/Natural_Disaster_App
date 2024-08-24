@@ -2,9 +2,8 @@ import { View, Text, ScrollView } from 'react-native';
 import React from 'react';
 import styles from './styles/Home';
 import Home_Card from './Components/Home_Card';
-
-const Home = () => {
-
+const Home = (props) => {
+    const { isActive } = props;
     return (
 
         <View style={styles.container}>
@@ -22,7 +21,17 @@ const Home = () => {
 
                 <Home_Card card_name="Toplanma Alanları" card_img={require('./img/toplanmaalani.png')} card_color="#00BF63" card_link="AssemblyArea_Screen" />
 
-                <Home_Card card_name="Profilim" card_img={require('./img/hesabim.png')} card_color="#FFBD59" card_link="ProfileMain_Screen" />
+                {isActive ? (
+                    <Home_Card card_name="Profilim" card_img={require('./img/hesabim.png')} card_color="#FFBD59" card_link="ProfileMain_Screen" />
+
+                ) : (
+                    <Home_Card card_name="Profilim" card_img={require('./img/hesabim.png')} card_color="#FFBD59" card_link="" />
+                )}
+
+
+
+
+
             </View>
 
         </View>

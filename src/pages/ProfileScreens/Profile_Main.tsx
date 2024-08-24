@@ -1,5 +1,6 @@
-import { ScrollView, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+
+import { ActivityIndicator, ScrollView, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
 import styles from '../../styles/Profile_Main';
 import { Button, Dialog, Card, IconButton, Text, TextInput, PaperProvider, Portal, MD3Colors } from 'react-native-paper';
 import DatePicker from 'react-native-date-picker';
@@ -7,30 +8,70 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { Picker } from '@react-native-picker/picker';
 import iller from '../../tempData/iller.json';
 import ilceler from '../../tempData/ilceler.json';
+import firestore from '@react-native-firebase/firestore';
+import database from '@react-native-firebase/database';
+import auth from '@react-native-firebase/auth';
+
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { Formik } from 'formik';
+import Toast from 'react-native-toast-message';
 
 const Profile_Main = () => {
+    const user = auth().currentUser;
 
-    const [adSoyad, setadSoyad] = useState('adsadas');
-    const [tcNo, settcNo] = useState('12312312311');
-    const [telefonNo, settelefonNo] = useState();
-    const [adres, setadres] = useState();
-    const [il, setil] = useState();
-    const [ilce, setilce] = useState();
-    const [filteredIlceler, setFilteredIlceler] = useState([]);
-    const [mail, setmail] = useState('');
-    const [dogumTarihi, setdogumTarihi] = useState(new Date());
     const [open, setOpen] = useState(false);
     const [kullaniciResmi, setkullaniciResmi] = useState(null);
 
-    useEffect(() => {
-        if (il) {
-            const ilId = iller.data.find((city) => city.name === il)?.id;
-            const filtered = ilceler.data.filter((district) => district.provinceId === ilId);
-            setFilteredIlceler(filtered);
-        } else {
-            setFilteredIlceler([]);
+    const [userData, setUserData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const navigation = useNavigation();
+
+
+    const fetchUserData = async () => {
+        try {
+            const userDoc = await firestore().collection('users').doc(auth().currentUser?.uid).get();
+            if (userDoc.exists) {
+                setUserData(userDoc.data());
+            }
+        } catch (error) {
+            console.error(error);
+            Toast.show({
+                type: 'error',
+                position: 'top',
+                text1: 'Veri Yükleme Hatası',
+                text2: 'Kullanıcı verileri yüklenemedi.',
+            });
+        } finally {
+            setLoading(false);
         }
-    }, [il]);
+    };
+
+    const handleUpdate = async (values) => {
+        try {
+
+            await firestore().collection('users').doc(auth().currentUser?.uid).update(values);
+            Toast.show({
+                type: 'success',
+                position: 'top',
+                text1: 'Güncelleme Başarılı',
+                text2: 'Profil bilgileriniz güncellendi.',
+            });
+            navigation.navigate('ProfileMain_Screen');
+        } catch (error) {
+            console.error('Güncelleme Hatası:', error);
+            Toast.show({
+                type: 'error',
+                position: 'top',
+                text1: 'Güncelleme Hatası',
+                text2: 'Profil bilgileriniz güncellenemedi.',
+            });
+        }
+    };
+
+
+    useEffect(() => {
+        fetchUserData();
+    }, []);
 
     const options = {
         mediaType: 'photo',
@@ -63,6 +104,10 @@ const Profile_Main = () => {
     const [visible, setVisible] = useState(false);
     const showDialog = () => setVisible(true);
     const hideDialog = () => setVisible(false);
+
+    if (loading) {
+        return <ActivityIndicator size="large" color="#0000ff" />;
+    }
 
     return (
         <PaperProvider>
@@ -103,118 +148,148 @@ const Profile_Main = () => {
 
                         >RESMİ GÜNCELLE</Button>
                     </View>
-                    <Card.Content style={{ marginVertical: '2%', padding: 5 }} >
-                        <TextInput
-                            label="Ad-Soyad"
-                            value={adSoyad}
-                            inputMode="text"
-                            right={<TextInput.Icon
-                                icon="rename-box" />}
-                            activeOutlineColor="#5A89FF"
-                            mode="outlined"
-                            style={styles.input}
-                        />
 
-                        <TextInput
-                            label="T.C No"
-                            value={tcNo}
-                            right={<TextInput.Icon
-                                icon="card-account-details" />}
-                            inputMode="decimal"
-                            activeOutlineColor="#5A89FF"
-                            mode="outlined"
-                            style={styles.input}
-                        />
-                        <TextInput
-                            label="Doğum Tarihi"
-                            activeOutlineColor="#5A89FF"
-                            right={<TextInput.Icon
-                                onPress={() => setOpen(true)}
-                                icon="calendar" />}
-                            editable={true}
-                            value={dogumTarihi.toLocaleDateString()}
-                            mode="outlined"
-                            style={styles.input} />
-                        <DatePicker
-                            modal
-                            open={open}
-                            date={dogumTarihi}
-                            mode="date"
-                            onConfirm={(date) => {
-                                setOpen(false);
-                                setdogumTarihi(date);
-                            }}
-                            onCancel={() => {
-                                setOpen(false);
-                            }}
-                        />
-                        <TextInput
-                            label="Telefon Numarası"
-                            activeOutlineColor="#5A89FF"
-                            right={<TextInput.Icon
-                                icon="phone" />}
-                            value={telefonNo}
-                            inputMode="numeric"
-                            maxLength={10}
-                            placeholder="Telefon Numaranızı Başında 0 Olmadan Giriniz."
-                            mode="outlined"
-                            style={styles.input}
-                        />
-                        <TextInput
-                            label="Email"
-                            activeOutlineColor="#5A89FF"
-                            right={<TextInput.Icon
-                                icon="email" />}
-                            value={telefonNo}
-                            inputMode="email"
-                            maxLength={10}
-                            placeholder="Email Adresinizi Giriniz."
-                            mode="outlined"
-                            style={styles.input}
-                        />
-                        <TextInput
-                            label="Adres"
-                            activeOutlineColor="#5A89FF"
-                            right={<TextInput.Icon
-                                icon="home-map-marker" />}
-                            value={adres}
-                            inputMode="text"
-                            numberOfLines={5}
-                            mode="outlined"
-                            style={styles.input}
-                        />
+                    <Formik
+                        initialValues={{
+                            mail: auth().currentUser?.email,
+                            tcNo: userData?.tcNo || '',
+                            address: userData?.address || '',
+                            birthday: userData?.birthday || '',
+                            district: userData?.district || '',
+                            province: userData?.province || '',
+                            tel: userData?.tel || '',
+                            name: userData?.name || '',
+                        }}
+                        onSubmit={handleUpdate}
+                    >
+                        {
+                            ({ handleChange, handleSubmit, values }) => (
+                                <>
+                                    <Card.Content style={{ marginVertical: '2%', padding: 5 }} >
+                                        <TextInput
+                                            label="Ad-Soyad"
+                                            value={values.name}
+                                            activeOutlineColor="#5A89FF"
 
-                        <Picker
-                            mode="dialog"
-                            selectedValue={il}
-                            onValueChange={(item) => {
-                                setil(item);
-                                setilce(null);
-                            }}
-                        >
-                            <Picker.Item label="Lütfen Yaşadığınız İli Seçiniz" value={null} />
-                            {iller.data.map((city) => (
-                                <Picker.Item key={city.id} label={city.name} value={city.name} />
-                            ))}
-                        </Picker>
-                        <Picker
-                            mode="dialog"
-                            selectedValue={ilce}
-                            onValueChange={(item) => setilce(item)}
-                            enabled={filteredIlceler.length > 0}
-                        >
-                            <Picker.Item label="Lütfen Yaşadığınız İlçeyi Seçiniz" value={null} />
-                            {filteredIlceler.map((city) => (
-                                <Picker.Item key={city.id} label={city.name} value={city.name} />
-                            ))}
-                        </Picker>
-                    </Card.Content>
-                    <Card.Actions style={{ alignSelf: 'center', margin: '1%' }}>
-                        <Button style={{ backgroundColor: '#5A89FF' }}
-                            mode="contained"
-                            onPress={() => console.log('kaydedildi')}
-                        >KAYDET</Button>
-                    </Card.Actions>
+                                            onChangeText={handleChange('name')}
+                                            mode="outlined"
+                                            style={styles.input}
+                                            right={<TextInput.Icon icon="rename-box" />}
+                                        />
+                                        <TextInput
+                                            label="T.C No"
+                                            value={values.tcNo}
+                                            editable={false}
+                                            activeOutlineColor="#5A89FF"
+                                            mode="outlined"
+                                            style={styles.input}
+                                            right={<TextInput.Icon icon="card-account-details" />}
+                                        />
+                                        <TextInput
+                                            label="Doğum Tarihi"
+                                            textColor="black"
+                                            activeOutlineColor="#5A89FF"
+                                            value={values.birthday}
+                                            right={<TextInput.Icon
+                                                onPress={() => setOpen(true)}
+                                                icon="calendar" />}
+                                            editable={true}
+                                            mode="outlined"
+                                            style={styles.input}
+                                        />
+                                        <DatePicker
+                                            modal
+                                            open={open}
+                                            date={new Date(values.birthday || new Date())}
+                                            mode="date"
+                                            onConfirm={(date) => {
+                                                setOpen(false);
+                                                const formattedDate = date.toISOString().split('T')[0];
+                                                handleChange('birthday')(formattedDate);
+                                            }}
+                                            onCancel={() => {
+                                                setOpen(false);
+                                            }}
+                                        />
+
+                                        <TextInput
+                                            label="Telefon Numarası"
+                                            activeOutlineColor="#5A89FF"
+                                            right={<TextInput.Icon
+                                                icon="phone" />}
+                                            value={values.tel}
+                                            inputMode="numeric"
+                                            onChangeText={handleChange('tel')}
+                                            textColor="black"
+                                            maxLength={10}
+                                            placeholder="Telefon Numaranızı 0 Olmadan Giriniz."
+                                            mode="outlined"
+                                            style={styles.input}
+                                        />
+                                        <TextInput
+                                            label="Email"
+                                            activeOutlineColor="#5A89FF"
+                                            right={<TextInput.Icon
+                                                icon="email" />}
+                                            value={values.mail}
+                                            onChangeText={handleChange('mail')}
+                                            textColor="black"
+                                            inputMode="email"
+                                            maxLength={10}
+                                            placeholder="Email Adresinizi Giriniz."
+                                            mode="outlined"
+                                            style={styles.input}
+                                        />
+
+                                        <TextInput
+                                            label="İl"
+                                            activeOutlineColor="#5A89FF"
+                                            onChangeText={handleChange('province')}
+                                            value={values.province}
+                                            inputMode="text"
+                                            textColor="black"
+                                            mode="outlined"
+                                            style={styles.input}
+                                        />
+                                        <TextInput
+                                            label="İlçe"
+                                            activeOutlineColor="#5A89FF"
+                                            onChangeText={handleChange('district')}
+                                            value={values.district}
+                                            inputMode="text"
+                                            textColor="black"
+                                            mode="outlined"
+                                            style={styles.input}
+                                        />
+                                        <TextInput
+                                            label="Adres"
+                                            activeOutlineColor="#5A89FF"
+                                            onChangeText={handleChange('address')}
+
+                                            right={<TextInput.Icon
+                                                icon="home-map-marker" />}
+                                            value={values.address}
+                                            inputMode="text"
+                                            textColor="black"
+                                            numberOfLines={5}
+                                            mode="outlined"
+                                            style={styles.input}
+                                        />
+
+                                    </Card.Content>
+                                    <Card.Actions style={{ alignSelf: 'center', margin: '1%' }}>
+                                        <Button style={{ backgroundColor: '#5A89FF' }}
+                                            mode="contained"
+                                            textColor="white"
+                                            disabled={user ? false : true}
+                                            onPress={handleSubmit}
+                                        >KAYDET</Button>
+                                    </Card.Actions>
+                                </>
+                            )
+                        }
+                    </Formik>
+
                 </Card>
             </ScrollView >
         </PaperProvider>

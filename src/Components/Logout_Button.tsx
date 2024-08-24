@@ -4,8 +4,10 @@ import auth from '@react-native-firebase/auth';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { Button } from 'react-native-paper';
 import Toast from 'react-native-toast-message'
+import { useNavigation } from '@react-navigation/native';
 const Logout_Button = (props) => {
 
+    const navigation = useNavigation();
     const logout = async () => {
         try {
             await auth().signOut();
@@ -15,6 +17,7 @@ const Logout_Button = (props) => {
                 text1: 'İşlem Başarılı',
                 text2: 'Hesabınızdan başarıyla çıkış yapıldı.',
             });
+            return navigation.navigate('Home_Screen');
         } catch (error) {
             console.error('Logout Error:', error);
             Toast.show({
