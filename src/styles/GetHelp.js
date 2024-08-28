@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     },
 
     picker: {
-        backgroundColor: '#D9D9D9',
+        backgroundColor: 'white',
     },
     button: {
         marginVertical: '5%'

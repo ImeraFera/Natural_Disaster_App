@@ -4,7 +4,6 @@ const getDisasterGuides = async (db, id) => {
     const response = reference
         .once('value')
         .then(snapshot => {
-            console.log(snapshot.val());
         });
     return response;
 };

@@ -14,7 +14,7 @@ const Declaration_Details_Card = () => {
     const hideModal = () => setVisible(false);
 
     const handleCall = async () => {
-        const phoneNumber = item.contact.phone;
+        const phoneNumber = item.contact1;
         const phoneUrl = `tel:${phoneNumber}`;
 
         if (Platform.OS === 'android') {
@@ -56,10 +56,10 @@ const Declaration_Details_Card = () => {
         <Card style={styles.container}>
             <Card.Cover source={{ uri: item.photo }} />
             <Card.Title titleVariant="headlineSmall"
-                titleStyle={{ fontWeight: 'bold' }}
+                titleStyle={{ fontWeight: 'bold', textAlign: 'center' }}
                 title={item.name} />
             <Card.Content>
-                <Text variant="titleLarge">Cinsiyet: <Text style={{ fontWeight: 'bold' }} >{item.gender}</Text></Text>
+                <Text variant="titleLarge">Cinsiyet: <Text style={{ fontWeight: 'bold' }} >{(item.gender == 'Man') ? 'Erkek' : 'Kadın'}</Text></Text>
                 <Divider />
                 <Text variant="titleLarge">Yaş:
                     <Text style={{ fontWeight: 'bold' }}>
@@ -69,38 +69,38 @@ const Declaration_Details_Card = () => {
 
                 <Text variant="titleLarge">Son Görülme Yeri:
                     <Text style={{ fontWeight: 'bold' }}>
-                        {item.locationLost}
+                        {item.lastPlace}
                     </Text>
                 </Text>
                 <Divider />
 
                 <Text variant="titleLarge">Detaylar:
                     <Text style={{ fontWeight: 'bold' }}>
-                        {item.description}</Text>
+                        {item.details}</Text>
                 </Text>
                 <Divider />
                 <Text variant="titleLarge">Kaybolma Tarihi:
                     <Text style={{ fontWeight: 'bold' }}>
-                        {item.dateLost}</Text>
+                        {item.date}</Text>
                 </Text>
 
                 <Divider />
 
                 <Text variant="titleLarge">İletişim:
                     <Text style={{ fontWeight: 'bold' }}>
-                        {item.contact.phone}</Text>
+                        {item.contact1}</Text>
                 </Text>
                 <Divider />
 
                 <Text variant="titleLarge">İletişim:
                     <Text style={{ fontWeight: 'bold' }}>
-                        {item.contact.email}</Text>
+                        {item.contact2}</Text>
                 </Text>
                 <Divider />
 
                 <Text variant="titleLarge">Ödül:
                     <Text style={{ fontWeight: 'bold' }}>
-                        {item.reward}</Text>
+                        {item.prize ? item.prize + " TL" : 'Yok'}</Text>
                 </Text>
             </Card.Content>
             <Card.Actions >

@@ -4,203 +4,226 @@ import { Picker } from '@react-native-picker/picker';
 import DatePicker from 'react-native-date-picker';
 import { TextInput, Text, Checkbox, Button, Switch } from 'react-native-paper';
 import styles from '../../styles/GetHelp';
-import database from '@react-native-firebase/database';
+import { Formik } from 'formik';
+import firestore from '@react-native-firebase/firestore';
+import Toast from 'react-native-toast-message';
+import { useNavigation } from '@react-navigation/native';
+import * as Yup from 'yup';
 
-
+const DeclarationSchema = Yup.object().shape({
+    name: Yup.string().required('Bu alan zorunludur'),
+    gender: Yup.string().required('Bu alan zorunludur'),
+    age: Yup.string().required('Bu alan zorunludur'),
+    lastPlace: Yup.string().required('Bu alan zorunludur'),
+    date: Yup.string().required('Bu alan zorunludur'),
+    details: Yup.string().required('Bu alan zorunludur'),
+    contact1: Yup.string().required('Bu alan zorunludur'),
+    contact2: Yup.string().email('Geçersiz email adresi').required('Bu alan zorunludur'),
+    address: Yup.string().required('Bu alan zorunludur'),
+    prize: Yup.string(),
+});
 
 const Declaration_Settings = () => {
 
-    const [name, setName] = useState('');
-    const [gender, setGender] = useState('');
-    const [age, setAge] = useState('');
-    const [location, setLocation] = useState('');
-    const [details, setDetails] = useState('');
-    const [tel, setTel] = useState('');
-    const [email, setEmail] = useState('');
-    const [homeAdress, setHomeAdress] = useState('');
-    const [date, setDate] = useState(new Date());
     const [open, setOpen] = useState(false);
-    const [isChecked, setIsChecked] = useState(false);
-    const [rewardAmount, setRewardAmount] = useState('');
+    const navigation = useNavigation();
+    const handlePost = async (values) => {
+        const { name, gender, age, lastPlace, date, details, contact1, contact2, address, prize } = values;
+        try {
+            await firestore().collection('missing_people').add({
+                name,
+                gender,
+                age,
+                lastPlace,
+                date,
+                details,
+                contact1,
+                contact2,
+                address,
+                prize,
+            });
 
+            Toast.show({
+                type: 'success',
+                position: 'top',
+                text1: 'İşlem Başarılı',
+                text2: 'Kayıp ilanınız eklendi.',
+            });
 
-    const handleSubmit = () => {
-        const data = {
-            name,
-            gender,
-            age,
-            location,
-            details,
-            tel,
-            email,
-            homeAdress,
-            date: date.toISOString(),
-            rewardAmount: isChecked ? rewardAmount : null
-        };
-
-        database().ref('declarations/');
+            navigation.navigate('Home_Screen');
+        } catch (error) {
+            console.error('İlan kaydedilirken bir hata oluştu:', error);
+        }
     };
 
-    const sendData = (data) => {
-
-        const dataObj = {
-            ...data,
-            owner: "",
-        }
-
-    }
-
     return (
+
         <View style={styles.container}>
             <Text style={styles.text}>Kayıp İlanı Formu</Text>
             <View style={styles.container2}>
                 <ScrollView style={styles.container_form}>
-                    <View style={styles.form_elements}>
-                        <Text variant="labelLarge">Ad-Soyad:</Text>
-                        <TextInput
-                            style={{ backgroundColor: '#D9D9D9' }}
-                            activeUnderlineColor="red"
-                            mode="flat"
-                            label="Kayıp Kişinin Adı-Soyadı"
-                            numberOfLines={1}
-                            value={name}
-                            onChangeText={text => setName(text)}
-                        />
-                    </View>
-                    <View style={styles.form_elements}>
-                        <Text variant="labelLarge">Cinsiyet:</Text>
-                        <Picker style={styles.picker}
-                            selectedValue={gender}
-                            onValueChange={(itemValue) => setGender(itemValue)} >
-                            <Picker.Item label="Lütfen Cinsiyet Seçiniz" value="" />
-                            <Picker.Item label="Kadın" value="Woman" />
-                            <Picker.Item label="Erkek" value="Man" />
-                        </Picker>
-                    </View>
-                    <View style={styles.form_elements}>
-                        <Text variant="labelLarge">Yaş:</Text>
-                        <TextInput
-                            style={{ backgroundColor: '#D9D9D9' }}
-                            activeUnderlineColor="red"
-                            mode="flat"
-                            label="Kayıp Kişinin Yaşı"
-                            numberOfLines={1}
-                            value={age}
-                            onChangeText={text => setAge(text)}
-                        />
-                    </View>
-                    <View style={styles.form_elements}>
-                        <Text variant="labelLarge">Kayıp Yeri:</Text>
-                        <TextInput
-                            style={{ backgroundColor: '#D9D9D9' }}
-                            activeUnderlineColor="red"
-                            mode="flat"
-                            label="Son Görüldüğü Yer"
-                            numberOfLines={1}
-                            value={location}
-                            onChangeText={text => setLocation(text)}
-                        />
-                    </View>
-                    <View style={styles.form_elements}>
-                        <Text variant="labelLarge">Kayıp Tarihi:</Text>
-                        <TextInput onPress={() => setOpen(true)}
-                            mode="flat"
-                            style={{ backgroundColor: '#D9D9D9' }}
-                            value={date.toLocaleDateString('tr-TR')}
-                            activeUnderlineColor="red"
-                            right={<TextInput.Icon onPress={() => setOpen(true)} icon="calendar" />}
-                        />
-                        <View style={{ flexDirection: 'column' }}>
-                            <DatePicker
-                                modal
-                                open={open}
-                                date={date}
-                                mode="date"
-                                onConfirm={(newDate) => {
-                                    setOpen(false);
-                                    setDate(newDate);
-                                }}
-                                onCancel={() => {
-                                    setOpen(false);
-                                }}
-                            />
-                        </View>
-                    </View>
-                    <View style={styles.form_elements}>
-                        <Text variant="labelLarge">Detaylar:</Text>
-                        <TextInput
-                            contentStyle={{ backgroundColor: '#D9D9D9' }}
-                            activeUnderlineColor="red"
-                            mode="flat"
-                            label="Kayıp Kişinin Giydiği Kıyafetler vb."
-                            numberOfLines={5}
-                            value={details}
-                            onChangeText={text => setDetails(text)}
-                        />
-                    </View>
-                    <View style={styles.form_elements}>
-                        <Text variant="labelLarge">İletişim 1:</Text>
-                        <TextInput
-                            contentStyle={{ backgroundColor: '#D9D9D9' }}
-                            activeUnderlineColor="red"
-                            mode="flat"
-                            label="Telefon Numaranızı Giriniz"
-                            numberOfLines={1}
-                            value={tel}
-                            onChangeText={text => setTel(text)}
-                        />
-                    </View>
-                    <View style={styles.form_elements}>
-                        <Text variant="labelLarge">İletişim 2:</Text>
-                        <TextInput
-                            contentStyle={{ backgroundColor: '#D9D9D9' }}
-                            activeUnderlineColor="red"
-                            mode="flat"
-                            label="Email Adresinizi Giriniz"
-                            numberOfLines={1}
-                            value={email}
-                            onChangeText={text => setEmail(text)}
-                        />
-                    </View>
-                    <View style={styles.form_elements}>
-                        <Text variant="labelLarge">Adres:</Text>
-                        <TextInput
-                            contentStyle={{ backgroundColor: '#D9D9D9' }}
-                            activeUnderlineColor="red"
-                            mode="flat"
-                            label="Ev Adresinizi Giriniz"
-                            numberOfLines={5}
-                            value={homeAdress}
-                            onChangeText={text => setHomeAdress(text)}
-                        />
-                    </View>
-                    <View style={styles.form_elements}>
-                        <Checkbox.Item
-                            label="Ödül Vermek İstiyorum"
-                            status={isChecked ? 'checked' : 'unchecked'}
-                            onPress={() => setIsChecked(!isChecked)}
-                        />
-                    </View>
-                    {isChecked && (
-                        <View style={styles.form_elements}>
-                            <Text variant="labelLarge">Ödül Miktarı (TL):</Text>
-                            <TextInput
-                                contentStyle={{ backgroundColor: '#D9D9D9' }}
-                                activeUnderlineColor="red"
-                                mode="flat"
-                                inputMode="decimal"
-                                label="Ödül Miktarını Giriniz"
-                                numberOfLines={1}
-                                value={rewardAmount}
-                                onChangeText={amount => setRewardAmount(amount)}
-                            />
-                        </View>
-                    )}
-                    <View style={styles.button}>
-                        <Button mode="contained" buttonColor="#E30014" onPress={handleSubmit}>
-                            GÖNDER
-                        </Button>
-                    </View>
+                    <Formik
+                        initialValues={{
+                            name: '',
+                            gender: '',
+                            age: '',
+                            lastPlace: '',
+                            date: '',
+                            details: '',
+                            contact1: '',
+                            contact2: '',
+                            address: '',
+                            prize: '',
+                        }}
+                        validationSchema={DeclarationSchema}
+                        onSubmit={handlePost}
+                    >
+                        {({ handleChange, handleSubmit, values, setFieldValue, errors, touched }) => (
+                            <>
+                                <TextInput
+                                    mode="outlined"
+                                    activeOutlineColor="red"
+                                    label="Kayıp Kişinin Adı-Soyadı"
+                                    numberOfLines={1}
+                                    value={values.name}
+                                    onChangeText={handleChange('name')}
+                                />
+                                {touched.name && errors.name && (
+                                    <Text style={{ color: 'red' }}>{errors.name}</Text>
+                                )}
+                                <Picker
+                                    style={styles.picker}
+                                    selectedValue={values.gender}
+                                    onValueChange={(itemValue) => setFieldValue('gender', itemValue)}
+                                >
+                                    <Picker.Item label="Kayıp Kişinin Cinsiyeti" value="" />
+                                    <Picker.Item label="Kadın" value="Woman" />
+                                    <Picker.Item label="Erkek" value="Man" />
+                                </Picker>
+                                {touched.gender && errors.gender && (
+                                    <Text style={{ color: 'red' }}>{errors.gender}</Text>
+                                )}
+                                <TextInput
+                                    activeOutlineColor="red"
+                                    mode="outlined"
+                                    label="Kayıp Kişinin Yaşı"
+                                    numberOfLines={1}
+                                    value={values.age}
+                                    inputMode='numeric'
+                                    onChangeText={handleChange('age')}
+                                />
+                                {touched.age && errors.age && (
+                                    <Text style={{ color: 'red' }}>{errors.age}</Text>
+                                )}
+                                <TextInput
+                                    activeOutlineColor="red"
+                                    mode="outlined"
+                                    label="Son Görüldüğü Yer"
+                                    numberOfLines={1}
+                                    style={{ marginBottom: '2%' }}
+                                    value={values.lastPlace}
+                                    onChangeText={handleChange('lastPlace')}
+                                />
+                                {touched.lastPlace && errors.lastPlace && (
+                                    <Text style={{ color: 'red' }}>{errors.lastPlace}</Text>
+                                )}
+                                <TextInput
+                                    activeOutlineColor="red"
+                                    mode="outlined"
+                                    value={values.date}
+                                    right={<TextInput.Icon onPress={() => setOpen(true)} icon="calendar" />}
+                                    onPressIn={() => setOpen(true)}
+                                />
+                                <DatePicker
+                                    modal
+                                    open={open}
+                                    date={new Date(values.date || new Date())}
+                                    maximumDate={new Date()}
+                                    mode="date"
+                                    onConfirm={(newDate) => {
+                                        setOpen(false);
+                                        setFieldValue('date', newDate.toISOString().split('T')[0]);
+                                    }}
+                                    onCancel={() => {
+                                        setOpen(false);
+                                    }}
+                                />
+                                {touched.date && errors.date && (
+                                    <Text style={{ color: 'red' }}>{errors.date}</Text>
+                                )}
+                                <TextInput
+                                    activeOutlineColor="red"
+                                    mode="outlined"
+                                    label="Kayıp Kişinin Giydiği Kıyafetler vb."
+                                    numberOfLines={5}
+                                    value={values.details}
+                                    onChangeText={handleChange('details')}
+                                />
+                                {touched.details && errors.details && (
+                                    <Text style={{ color: 'red' }}>{errors.details}</Text>
+                                )}
+                                <TextInput
+                                    activeOutlineColor="red"
+                                    mode="outlined"
+                                    label="Telefon Numaranızı Giriniz"
+                                    numberOfLines={1}
+                                    inputMode='numeric'
+
+                                    value={values.contact1}
+                                    onChangeText={handleChange('contact1')}
+                                />
+                                {touched.contact1 && errors.contact1 && (
+                                    <Text style={{ color: 'red' }}>{errors.contact1}</Text>
+                                )}
+                                <TextInput
+                                    activeOutlineColor="red"
+                                    mode="outlined"
+                                    label="Email Adresinizi Giriniz"
+                                    numberOfLines={1}
+                                    value={values.contact2}
+                                    onChangeText={handleChange('contact2')}
+                                />
+                                {touched.contact2 && errors.contact2 && (
+                                    <Text style={{ color: 'red' }}>{errors.contact2}</Text>
+                                )}
+                                <TextInput
+                                    activeOutlineColor="red"
+                                    mode="outlined"
+                                    label="Ev Adresinizi Giriniz"
+                                    numberOfLines={5}
+                                    value={values.address}
+                                    onChangeText={handleChange('address')}
+                                />
+                                {touched.address && errors.address && (
+                                    <Text style={{ color: 'red' }}>{errors.address}</Text>
+                                )}
+                                <TextInput
+                                    activeOutlineColor="red"
+                                    mode="outlined"
+                                    inputMode="numeric"
+                                    label="Ödül Miktarını Giriniz"
+                                    numberOfLines={1}
+                                    value={values.prize}
+                                    onChangeText={handleChange('prize')}
+                                />
+                                {touched.prize && errors.prize && (
+                                    <Text style={{ color: 'red' }}>{errors.prize}</Text>
+                                )}
+                                <Text>
+                                    * Ödül vermek istemiyorsanız boş bırakınız.
+                                </Text>
+                                <Button
+                                    style={{ marginVertical: '5%' }}
+                                    mode="contained"
+                                    buttonColor="red"
+                                    textColor="white"
+                                    onPress={handleSubmit}
+                                >
+                                    Kaydı Tamamla
+                                </Button>
+                            </>
+                        )}
+                    </Formik>
                 </ScrollView>
             </View>
         </View>

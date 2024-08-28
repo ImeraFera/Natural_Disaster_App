@@ -9,53 +9,49 @@ import { Picker } from '@react-native-picker/picker';
 import iller from '../../tempData/iller.json';
 import ilceler from '../../tempData/ilceler.json';
 import firestore from '@react-native-firebase/firestore';
-import database from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
 
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
 import Toast from 'react-native-toast-message';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Profile_Main = () => {
-    const user = auth().currentUser;
 
+    const userData = useSelector(s => s.userData);
+    const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const [kullaniciResmi, setkullaniciResmi] = useState(null);
 
-    const [userData, setUserData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const navigation = useNavigation();
 
-
-    const fetchUserData = async () => {
-        try {
-            const userDoc = await firestore().collection('users').doc(auth().currentUser?.uid).get();
-            if (userDoc.exists) {
-                setUserData(userDoc.data());
-            }
-        } catch (error) {
-            console.error(error);
-            Toast.show({
-                type: 'error',
-                position: 'top',
-                text1: 'Veri Yükleme Hatası',
-                text2: 'Kullanıcı verileri yüklenemedi.',
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleUpdate = async (values) => {
-        try {
+        setLoading(true);
 
+        try {
             await firestore().collection('users').doc(auth().currentUser?.uid).update(values);
+
+            dispatch({
+                type: 'UPDATE_USER',
+                payload: {
+                    name: values.name,
+                    address: values.address,
+                    birthday: values.birthday,
+                    district: values.district,
+                    tel: values.tel,
+                    province: values.province,
+                },
+            });
+
             Toast.show({
                 type: 'success',
                 position: 'top',
                 text1: 'Güncelleme Başarılı',
                 text2: 'Profil bilgileriniz güncellendi.',
             });
+            setLoading(false);
+
             navigation.navigate('ProfileMain_Screen');
         } catch (error) {
             console.error('Güncelleme Hatası:', error);
@@ -64,14 +60,10 @@ const Profile_Main = () => {
                 position: 'top',
                 text1: 'Güncelleme Hatası',
                 text2: 'Profil bilgileriniz güncellenemedi.',
-            });
+            }); qand
         }
     };
 
-
-    useEffect(() => {
-        fetchUserData();
-    }, []);
 
     const options = {
         mediaType: 'photo',
@@ -232,6 +224,7 @@ const Profile_Main = () => {
                                             right={<TextInput.Icon
                                                 icon="email" />}
                                             value={values.mail}
+                                            readOnly={true}
                                             onChangeText={handleChange('mail')}
                                             textColor="black"
                                             inputMode="email"
@@ -281,7 +274,6 @@ const Profile_Main = () => {
                                         <Button style={{ backgroundColor: '#5A89FF' }}
                                             mode="contained"
                                             textColor="white"
-                                            disabled={user ? false : true}
                                             onPress={handleSubmit}
                                         >KAYDET</Button>
                                     </Card.Actions>

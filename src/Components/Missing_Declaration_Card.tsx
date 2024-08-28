@@ -8,6 +8,7 @@ const Missing_Declaration_Card = ({ props }) => {
     const navigation = useNavigation();
 
     const item = props;
+
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
 
@@ -31,7 +32,7 @@ const Missing_Declaration_Card = ({ props }) => {
             <Card.Title titleStyle={{ color: 'white' }} title="Kayıp İlanı" />
             <Card.Content >
                 <Text style={{ color: 'white' }} variant="titleMedium"> {item.name}</Text>
-                <Text variant="titleSmall" style={{ color: 'white' }}> {item.contact.phone}</Text>
+                <Text variant="titleSmall" style={{ color: 'white' }}> {item.contact1}</Text>
             </Card.Content>
             <TouchableOpacity onPress={handleImagePress}>
                 <Card.Cover style={{ width: 150, height: 150, alignSelf: 'center', borderRadius: 10 }} source={{ uri: item.photo }} />

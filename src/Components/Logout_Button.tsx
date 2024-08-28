@@ -5,12 +5,18 @@ import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawe
 import { Button } from 'react-native-paper';
 import Toast from 'react-native-toast-message'
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+
 const Logout_Button = (props) => {
 
     const navigation = useNavigation();
+    const dispatch = useDispatch();
+
     const logout = async () => {
         try {
             await auth().signOut();
+            dispatch({ type: 'LOGOUT' });
+
             Toast.show({
                 type: 'success',
                 position: 'top',
