@@ -1,9 +1,10 @@
-import { View, Text, FlatList, Modal } from 'react-native';
+import { View, Text, FlatList, Modal, ActivityIndicator } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import styles from '../../styles/Missing_Declaration';
 import Missing_Declaration_Card from '../../Components/Missing_Declaration_Card';
 import { Appbar, Button, Divider, RadioButton, Searchbar } from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
+import { Picker } from '@react-native-picker/picker';
 
 
 
@@ -12,6 +13,7 @@ const Missing_Declaration = () => {
     const [declarations, setDeclarations] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredDeclarations, setFilteredDeclarations] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const fetchData = async () => {
         try {
@@ -27,9 +29,13 @@ const Missing_Declaration = () => {
         } catch (error) {
             console.log('Veri çekilirken bir hata oluştu:', error);
         }
+        finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
+        setLoading(true);
         fetchData();
     }, []);
 
@@ -46,18 +52,26 @@ const Missing_Declaration = () => {
         <Missing_Declaration_Card props={item} />
     );
 
+    if (loading) {
+        return (
+            <ActivityIndicator size="large" color="#0000ff" />
+        );
+    }
+
     return (
         <View style={styles.container}>
-            <Appbar.Header style={{ backgroundColor: '#d9d9d9' }}>
-                <Searchbar
-                    style={{ backgroundColor: 'white' }}
-                    placeholderTextColor="red"
-                    iconColor="red"
-                    placeholder="Search"
-                    onChangeText={setSearchQuery}
-                    value={searchQuery}
-                />
-            </Appbar.Header>
+            <View >
+                <Appbar.Header style={{ backgroundColor: '#d9d9d9', }}>
+                    <Searchbar
+                        style={{ backgroundColor: 'white', }}
+                        placeholderTextColor="red"
+                        iconColor="red"
+                        placeholder="Search"
+                        onChangeText={setSearchQuery}
+                        value={searchQuery}
+                    />
+                </Appbar.Header>
+            </View>
             <Divider />
             <FlatList
                 data={filteredDeclarations}
@@ -65,6 +79,8 @@ const Missing_Declaration = () => {
                 keyExtractor={(item) => item.id}
                 style={{ flex: 1 }}
             />
+
+
         </View>
     );
 };

@@ -6,9 +6,12 @@ import { TextInput, Text, Checkbox, Button, Switch } from 'react-native-paper';
 import styles from '../../styles/GetHelp';
 import { Formik } from 'formik';
 import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+
 import Toast from 'react-native-toast-message';
 import { useNavigation } from '@react-navigation/native';
 import * as Yup from 'yup';
+import { useSelector } from 'react-redux';
 
 const DeclarationSchema = Yup.object().shape({
     name: Yup.string().required('Bu alan zorunludur'),
@@ -23,12 +26,28 @@ const DeclarationSchema = Yup.object().shape({
     prize: Yup.string(),
 });
 
+
+
 const Declaration_Settings = () => {
+    const userData = useSelector(s => s.userData);
+    console.log(userData)
+    const navigation = useNavigation();
 
     const [open, setOpen] = useState(false);
-    const navigation = useNavigation();
+    if (!userData.isAuth) {
+        navigation.goBack()
+
+        Toast.show({
+            type: 'error',
+            position: 'top',
+            text1: 'Hata',
+            text2: 'Lütfen giriş yapınız.',
+        });
+        return;
+    }
     const handlePost = async (values) => {
         const { name, gender, age, lastPlace, date, details, contact1, contact2, address, prize } = values;
+        const userId = auth().currentUser?.uid;
         try {
             await firestore().collection('missing_people').add({
                 name,
@@ -41,6 +60,7 @@ const Declaration_Settings = () => {
                 contact2,
                 address,
                 prize,
+                owner: userId,
             });
 
             Toast.show({

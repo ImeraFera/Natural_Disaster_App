@@ -81,8 +81,10 @@ const HelpStack = () => {
             <Stack.Screen name="GiveHelpScreen" component={GiveHelp} options={{}} />
             <Stack.Screen name="DeclarationSettingsScreen" component={DeclarationSettings} options={{}} />
             <Stack.Screen name="MissingDeclarationScreen" component={MissingDeclaration} options={{}} />
-            <Stack.Screen name="DeclarationDetailsScreen" component={DeclarationDetails} options={{}} />
-
+            <Stack.Screen
+                name="DeclarationDetailsScreen"
+                component={DeclarationDetails}
+                options={{}} />
             <Stack.Screen
                 name="HelpDetailsScreen"
                 component={HelpDetails}

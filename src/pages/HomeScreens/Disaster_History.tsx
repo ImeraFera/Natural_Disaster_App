@@ -2,8 +2,8 @@ import { View, Text, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import styles from '../../styles/Disaster_History';
 import Disaster_Card from '../../Components/Disaster_Card';
-import db from '@react-native-firebase/database';
 import { ActivityIndicator } from 'react-native-paper';
+import data from '../../tempData/data';
 const card_fields = [
     {
         card_name: 'Deprem',
@@ -44,35 +44,15 @@ const card_fields = [
 ];
 const Disaster_History = () => {
 
-    const [data, setData] = useState(null);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const snapshot = await db().ref('histories/').once('value');
-                const fetchedData = snapshot.val();
-                setData(fetchedData);
-            } catch (error) {
-                console.error('Error fetching data: ', error);
-            }
-        };
-
-        fetchData();
-    }, []);
-
-    if (!data) {
-        return <ActivityIndicator size="large" color="#0000ff" />;
-    }
-
     return (
         <View style={styles.container}>
-            {card_fields.map((field, index) => (
+            {card_fields.map((item, index) => (
                 <Disaster_Card
                     key={index}
-                    card_name={field.card_name}
-                    card_img={field.card_img}
-                    card_color={field.card_color}
-                    card_link={field.card_link}
+                    card_name={item.card_name}
+                    card_img={item.card_img}
+                    card_color={item.card_color}
+                    card_link={item.card_link}
                     data={data}
                 />
             ))}

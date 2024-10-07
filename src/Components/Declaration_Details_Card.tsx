@@ -6,7 +6,6 @@ import { Text, Modal, Button, Card, Divider, PaperProvider, Portal } from 'react
 import { Linking } from 'react-native';
 
 const Declaration_Details_Card = () => {
-    const [modalVisible, setModalVisible] = useState(false);
 
     const [visible, setVisible] = React.useState(false);
 
