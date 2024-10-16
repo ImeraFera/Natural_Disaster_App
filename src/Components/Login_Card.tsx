@@ -11,57 +11,35 @@ import {
   HelperText,
 } from 'react-native-paper';
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
 import database from '@react-native-firebase/database';
 import Toast from 'react-native-toast-message';
 import {Formik} from 'formik';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {validationSchema} from '../validationSchemas/LoginSchema';
+import {login} from '../redux/slices/userSlice';
 
 const Login_Card = () => {
   const navigation = useNavigation();
-  // const [beniUnutma, setBeniUnutma] = useState(false);
-
   const dispatch = useDispatch();
+
+  const [isLoading, setisLoading] = useState(false);
+
   const handleLogin = async values => {
-    const {mail, password} = values;
+    setisLoading(true);
     try {
-      const user = await auth().signInWithEmailAndPassword(mail, password);
-      const userDoc = await firestore()
-        .collection('users')
-        .doc(user.user.uid)
-        .get();
-      if (userDoc.exists) {
-        const userData = userDoc.data();
-        dispatch({
-          type: 'LOGIN',
-          payload: {
-            name: userData?.name,
-            mail,
-            uid: user.user.uid,
-            isAuth: true,
-            birthday: userData?.birthday,
-            address: userData?.address,
-            tel: userData?.tel,
-            district: userData?.district,
-            province: userData?.province,
-            tcNo: userData?.tcNo,
-            photoUrl: userData?.photoUrl,
-          },
-        });
+      await dispatch(login(values)).unwrap();
 
-        values.mail = '';
-        values.password = '';
+      values.mail = '';
+      values.password = '';
 
-        Toast.show({
-          type: 'success',
-          position: 'top',
-          text1: 'Giriş Başarılı',
-          text2: 'Başarıyla giriş yaptınız.',
-        });
-        return navigation.navigate('Home_Screen');
-      }
+      Toast.show({
+        type: 'success',
+        position: 'top',
+        text1: 'Giriş Başarılı',
+        text2: 'Başarıyla giriş yaptınız.',
+      });
+
+      return navigation.navigate('Home_Screen');
     } catch (error) {
       Toast.show({
         type: 'error',
@@ -69,6 +47,8 @@ const Login_Card = () => {
         text1: 'Giriş Başarısız',
         text2: 'Mail veya şifreniz yanlış',
       });
+    } finally {
+      setisLoading(false);
     }
   };
 
@@ -109,6 +89,9 @@ const Login_Card = () => {
                 />
                 <HelperText
                   type="error"
+                  style={{
+                    display: touched.mail && errors.mail ? 'flex' : 'none',
+                  }}
                   visible={touched.mail && errors.mail ? true : false}>
                   {errors.mail}
                 </HelperText>
@@ -125,6 +108,9 @@ const Login_Card = () => {
                 />
                 <HelperText
                   type="error"
+                  style={{
+                    display: touched.mail && errors.mail ? 'flex' : 'none',
+                  }}
                   visible={touched.mail && errors.mail ? true : false}>
                   {errors.password}
                 </HelperText>
@@ -149,6 +135,7 @@ const Login_Card = () => {
                 <Button
                   onPress={handleSubmit}
                   mode="contained"
+                  loading={isLoading}
                   buttonColor="red">
                   GİRİŞ YAP
                 </Button>

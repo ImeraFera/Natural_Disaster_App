@@ -1,11 +1,15 @@
-
-import { View, Text, ColorValue, Image } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import {View, Text, ColorValue, Image} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
 // import Sidebar from './Components/Sidebar';
-import { DrawerContentScrollView, DrawerItem, DrawerItemList, createDrawerNavigator } from '@react-navigation/drawer';
+import {
+  DrawerContentScrollView,
+  DrawerItem,
+  DrawerItemList,
+  createDrawerNavigator,
+} from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/FontAwesome6';
-import { createStackNavigator } from '@react-navigation/stack';
+import {createStackNavigator} from '@react-navigation/stack';
 
 import auth from '@react-native-firebase/auth';
 
@@ -18,7 +22,6 @@ import GiveHelpForm from './pages/HelpScreens/Give_Help_Form';
 import MissingDeclaration from './pages/HelpScreens/Missing_Declaration';
 import DeclarationSettings from './pages/HelpScreens/Declaration_Settings';
 import DeclarationDetails from './pages/HelpScreens/Declaration_Details';
-
 
 import Disaster_History from './pages/HomeScreens/Disaster_History';
 import Emergency_Aid from './pages/HomeScreens/Emergency_Aid';
@@ -50,315 +53,317 @@ import Toast from 'react-native-toast-message';
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
-import { legacy_createStore as createStore } from 'redux';
+import {legacy_createStore as createStore} from 'redux';
 
 import reducers from './Context/reducers';
 import initialState from './Context/store';
 
-import { Provider, useSelector } from 'react-redux';
+import {Provider, useSelector} from 'react-redux';
 
 const ProfileStack = () => {
-
-
-    return (
-        <Stack.Navigator
-            screenOptions={{
-                headerShown: false,
-            }}>
-            <Stack.Screen name="ProfileMainScreen" component={ProfileMain} options={{}} />
-        </Stack.Navigator>
-    );
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Stack.Screen
+        name="ProfileMainScreen"
+        component={ProfileMain}
+        options={{}}
+      />
+    </Stack.Navigator>
+  );
 };
 
 const HelpStack = () => {
-    return (
-        <Stack.Navigator
-            screenOptions={{
-                headerShown: false,
-            }}>
-            <Stack.Screen name="HelpScreen" component={Help} options={{}} />
-            <Stack.Screen name="GetHelpScreen" component={GetHelp} options={{}} />
-            <Stack.Screen name="GiveHelpScreen" component={GiveHelp} options={{}} />
-            <Stack.Screen name="DeclarationSettingsScreen" component={DeclarationSettings} options={{}} />
-            <Stack.Screen name="MissingDeclarationScreen" component={MissingDeclaration} options={{}} />
-            <Stack.Screen
-                name="DeclarationDetailsScreen"
-                component={DeclarationDetails}
-                options={{}} />
-            <Stack.Screen
-                name="HelpDetailsScreen"
-                component={HelpDetails}
-                options={{}}
-            />
-            <Stack.Screen
-                name="GiveHelpFormScreen"
-                component={GiveHelpForm}
-                options={{}}
-            />
-        </Stack.Navigator>
-    );
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Stack.Screen name="HelpScreen" component={Help} options={{}} />
+      <Stack.Screen name="GetHelpScreen" component={GetHelp} options={{}} />
+      <Stack.Screen name="GiveHelpScreen" component={GiveHelp} options={{}} />
+      <Stack.Screen
+        name="DeclarationSettingsScreen"
+        component={DeclarationSettings}
+        options={{}}
+      />
+      <Stack.Screen
+        name="MissingDeclarationScreen"
+        component={MissingDeclaration}
+        options={{}}
+      />
+      <Stack.Screen
+        name="DeclarationDetailsScreen"
+        component={DeclarationDetails}
+        options={{}}
+      />
+      <Stack.Screen
+        name="HelpDetailsScreen"
+        component={HelpDetails}
+        options={{}}
+      />
+      <Stack.Screen
+        name="GiveHelpFormScreen"
+        component={GiveHelpForm}
+        options={{}}
+      />
+    </Stack.Navigator>
+  );
 };
 
 const DisasterHistoryStack = () => {
-
-
-    return (
-        <Stack.Navigator
-            screenOptions={{
-                headerShown: false,
-            }}>
-            <Stack.Screen
-                name="DisasterHistoryScreen"
-                component={Disaster_History}
-                options={{}}
-            />
-            <Stack.Screen
-                name="FloodHistoryScreen"
-                component={FloodHistory}
-                options={{}}
-            />
-            <Stack.Screen
-                name="EarthquakeHistoryScreen"
-                component={EarthquakeHistory}
-                options={{}}
-            />
-            <Stack.Screen
-                name="FireHistoryScreen"
-                component={FireHistory}
-                options={{}}
-            />
-            <Stack.Screen
-                name="AvalancheHistoryScreen"
-                component={AvalancheHistory}
-                options={{}}
-            />
-            <Stack.Screen
-                name="LandslideHistoryScreen"
-                component={LandslideHistory}
-                options={{}}
-            />
-            <Stack.Screen
-                name="OtherHistoryScreen"
-                component={OtherHistory}
-                options={{}}
-            />
-            <Stack.Screen
-                name="HistoryDetailsScreen"
-                component={HistoryDetails}
-                options={{}}
-            />
-        </Stack.Navigator>
-    );
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Stack.Screen
+        name="DisasterHistoryScreen"
+        component={Disaster_History}
+        options={{}}
+      />
+      <Stack.Screen
+        name="FloodHistoryScreen"
+        component={FloodHistory}
+        options={{}}
+      />
+      <Stack.Screen
+        name="EarthquakeHistoryScreen"
+        component={EarthquakeHistory}
+        options={{}}
+      />
+      <Stack.Screen
+        name="FireHistoryScreen"
+        component={FireHistory}
+        options={{}}
+      />
+      <Stack.Screen
+        name="AvalancheHistoryScreen"
+        component={AvalancheHistory}
+        options={{}}
+      />
+      <Stack.Screen
+        name="LandslideHistoryScreen"
+        component={LandslideHistory}
+        options={{}}
+      />
+      <Stack.Screen
+        name="OtherHistoryScreen"
+        component={OtherHistory}
+        options={{}}
+      />
+      <Stack.Screen
+        name="HistoryDetailsScreen"
+        component={HistoryDetails}
+        options={{}}
+      />
+    </Stack.Navigator>
+  );
 };
 
 const GuideStack = () => {
-    return (
-        <Stack.Navigator
-            screenOptions={{
-                headerShown: false,
-            }}>
-            <Stack.Screen name="GuideScreen" component={Guide} options={{}} />
-            <Stack.Screen name="FloodScreen" component={Flood} options={{}} />
-            <Stack.Screen
-                name="EarthquakeScreen"
-                component={Earthquake}
-                options={{}}
-            />
-            <Stack.Screen name="FireScreen" component={Fire} options={{}} />
-            <Stack.Screen name="AvalancheScreen" component={Avalanche} options={{}} />
-            <Stack.Screen name="LandslideScreen" component={Landslide} options={{}} />
-        </Stack.Navigator>
-    );
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Stack.Screen name="GuideScreen" component={Guide} options={{}} />
+      <Stack.Screen name="FloodScreen" component={Flood} options={{}} />
+      <Stack.Screen
+        name="EarthquakeScreen"
+        component={Earthquake}
+        options={{}}
+      />
+      <Stack.Screen name="FireScreen" component={Fire} options={{}} />
+      <Stack.Screen name="AvalancheScreen" component={Avalanche} options={{}} />
+      <Stack.Screen name="LandslideScreen" component={Landslide} options={{}} />
+    </Stack.Navigator>
+  );
 };
 
 const createIcon = (iconName: string, iconColor: number | ColorValue) => (
-    <Icon name={iconName} color={iconColor} size={25} />
+  <Icon name={iconName} color={iconColor} size={25} />
 );
 
 const flagImg = () => (
-    <View
-        style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-        }}>
-        <Image
-            style={{
-                width: 70,
-                height: 50,
-            }}
-            source={require('./img/turkiye-bayrak.png')}
-        />
-    </View>
+  <View
+    style={{
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}>
+    <Image
+      style={{
+        width: 70,
+        height: 50,
+      }}
+      source={require('./img/turkiye-bayrak.png')}
+    />
+  </View>
 );
 
-
 const MainApp = () => {
-    const userData = useSelector(s => s.userData);
-    return (
-        <>
-            <NavigationContainer>
-                <Drawer.Navigator
-                    initialRouteName="Home"
-                    screenOptions={{
-                        headerRight: flagImg,
-                        headerTintColor: 'white',
-                        headerStyle: {
-                            backgroundColor: '#E30014',
-                        },
-                        drawerStyle: {
-                            paddingTop: 10,
-                            paddingBottom: 10,
-                            backgroundColor: '#E30014',
-                            width: '80%',
-                        },
-                        drawerActiveBackgroundColor: 'white',
-                        drawerActiveTintColor: 'red',
-                        drawerInactiveBackgroundColor: '#FF9999',
-                        drawerInactiveTintColor: 'white',
-                        drawerLabelStyle: {
-                            fontSize: 18,
-                            fontWeight: 'bold',
-                        },
-                    }}
+  const isAuth = useSelector(({user}) => user.isAuth);
+  console.log(isAuth);
+  return (
+    <>
+      <NavigationContainer>
+        <Drawer.Navigator
+          initialRouteName="Home"
+          screenOptions={{
+            headerRight: flagImg,
+            headerTintColor: 'white',
+            headerStyle: {
+              backgroundColor: '#E30014',
+            },
+            drawerStyle: {
+              paddingTop: 10,
+              paddingBottom: 10,
+              backgroundColor: '#E30014',
+              width: '80%',
+            },
+            drawerActiveBackgroundColor: 'white',
+            drawerActiveTintColor: 'red',
+            drawerInactiveBackgroundColor: '#FF9999',
+            drawerInactiveTintColor: 'white',
+            drawerLabelStyle: {
+              fontSize: 18,
+              fontWeight: 'bold',
+            },
+          }}
+          drawerContent={props => (
+            <>
+              <Custom_Drawer_Content {...props} />
+            </>
+          )}>
+          <Drawer.Screen
+            name="Home_Screen"
+            component={Home}
+            options={{
+              title: 'Anasayfa',
+              drawerIcon: ({focused}) => {
+                let iconColor = focused ? 'red' : 'white';
+                return createIcon('house', iconColor);
+              },
+            }}
+          />
+          <Drawer.Screen
+            name="DisasterHistory_Screen"
+            component={DisasterHistoryStack}
+            options={{
+              title: 'Afet Tarihi',
+              drawerIcon: ({focused}) => {
+                let iconColor = focused ? 'red' : 'white';
+                return createIcon('book-open', iconColor);
+              },
+            }}
+          />
+          <Drawer.Screen
+            name="Help_Screen"
+            component={HelpStack}
+            options={{
+              title: 'Yardım Et Yardım Al',
+              drawerIcon: ({focused}) => {
+                let iconColor = focused ? 'red' : 'white';
+                return createIcon('briefcase-medical', iconColor);
+              },
+            }}
+          />
 
-                    drawerContent={props => (
-                        <>
-                            <Custom_Drawer_Content {...props} />
-                        </>
-                    )}
-                >
-                    <Drawer.Screen
-                        name="Home_Screen"
-                        component={Home}
-                        options={{
-                            title: 'Anasayfa',
-                            drawerIcon: ({ focused }) => {
-                                let iconColor = focused ? 'red' : 'white';
-                                return createIcon('house', iconColor);
-                            },
-                        }}
-                    />
-                    <Drawer.Screen
-                        name="DisasterHistory_Screen"
-                        component={DisasterHistoryStack}
-                        options={{
-                            title: 'Afet Tarihi',
-                            drawerIcon: ({ focused }) => {
-                                let iconColor = focused ? 'red' : 'white';
-                                return createIcon('book-open', iconColor);
-                            },
-                        }}
-                    />
-                    <Drawer.Screen
-                        name="Help_Screen"
-                        component={HelpStack}
-                        options={{
-                            title: 'Yardım Et Yardım Al',
-                            drawerIcon: ({ focused }) => {
-                                let iconColor = focused ? 'red' : 'white';
-                                return createIcon('briefcase-medical', iconColor);
-                            },
-                        }}
-                    />
+          {isAuth ? (
+            <Drawer.Screen
+              name="ProfileMain_Screen"
+              component={ProfileStack}
+              options={{
+                title: 'Profilim',
+                drawerIcon: ({focused}) => {
+                  let iconColor = focused ? 'red' : 'white';
+                  return createIcon('user-gear', iconColor);
+                },
+              }}
+            />
+          ) : null}
 
-                    {userData.isAuth ? (
-                        <Drawer.Screen
-                            name="ProfileMain_Screen"
-                            component={ProfileStack}
-                            options={{
-                                title: 'Profilim',
-                                drawerIcon: ({ focused }) => {
-                                    let iconColor = focused ? 'red' : 'white';
-                                    return createIcon('user-gear', iconColor);
-                                },
-                            }}
-                        />
-                    ) : null}
-
-
-                    <Drawer.Screen
-                        name="Guide_Screen"
-                        component={GuideStack}
-                        options={{
-                            title: 'Afet Rehberi',
-                            drawerIcon: ({ focused }) => {
-                                let iconColor = focused ? 'red' : 'white';
-                                return createIcon('book-atlas', iconColor);
-                            },
-                        }}
-                    />
-                    <Drawer.Screen
-                        name="EmergencyAid_Screen"
-                        component={Emergency_Aid}
-                        options={{
-                            title: 'Acil Yardım',
-                            drawerIcon: ({ focused }) => {
-                                let iconColor = focused ? 'red' : 'white';
-                                return createIcon('hand-holding-medical', iconColor);
-                            },
-                        }}
-                    />
-                    <Drawer.Screen
-                        name="AssemblyArea_Screen"
-                        component={Assembly_Area}
-                        options={{
-                            title: 'Toplanma Alanları',
-                            drawerIcon: ({ focused }) => {
-                                let iconColor = focused ? 'red' : 'white';
-                                return createIcon('map-location-dot', iconColor);
-                            },
-                        }}
-                    />
-                    {/* <Drawer.Screen name="Settings" component={Settings} options={{
+          <Drawer.Screen
+            name="Guide_Screen"
+            component={GuideStack}
+            options={{
+              title: 'Afet Rehberi',
+              drawerIcon: ({focused}) => {
+                let iconColor = focused ? 'red' : 'white';
+                return createIcon('book-atlas', iconColor);
+              },
+            }}
+          />
+          <Drawer.Screen
+            name="EmergencyAid_Screen"
+            component={Emergency_Aid}
+            options={{
+              title: 'Acil Yardım',
+              drawerIcon: ({focused}) => {
+                let iconColor = focused ? 'red' : 'white';
+                return createIcon('hand-holding-medical', iconColor);
+              },
+            }}
+          />
+          <Drawer.Screen
+            name="AssemblyArea_Screen"
+            component={Assembly_Area}
+            options={{
+              title: 'Toplanma Alanları',
+              drawerIcon: ({focused}) => {
+                let iconColor = focused ? 'red' : 'white';
+                return createIcon('map-location-dot', iconColor);
+              },
+            }}
+          />
+          {/* <Drawer.Screen name="Settings" component={Settings} options={{
           title: 'Ayarlar',
           drawerIcon: ({ focused }) => {
             let iconColor = focused ? 'red' : 'white';
             return createIcon('gear', iconColor);
           },
         }} /> */}
-                    {/* <Drawer.Screen name="Account" component={Account} options={{
+          {/* <Drawer.Screen name="Account" component={Account} options={{
           title: 'Hesabım',
           drawerIcon: ({ focused }) => {
             let iconColor = focused ? 'red' : 'white';
             return createIcon('user-gear', iconColor);
           },
         }} /> */}
-                    {userData.isAuth ? null : (
-                        <>
-                            <Drawer.Screen
-                                name="Login_Screen"
-                                component={Login}
-                                options={{
-                                    title: 'Giriş Yap',
-                                    drawerIcon: ({ focused }) => {
-                                        let iconColor = focused ? 'red' : 'white';
-                                        return createIcon('arrow-right-to-bracket', iconColor);
-                                    },
-                                }}
-                            />
-                            <Drawer.Screen
-                                name="Register_Screen"
-                                component={Register}
-                                options={{
-                                    title: 'Kayıt Ol',
-                                    drawerIcon: ({ focused }) => {
-                                        let iconColor = focused ? 'red' : 'white';
-                                        return createIcon('user-plus', iconColor);
-                                    },
-                                }}
-                            />
-                        </>
-
-                    )}
-
-
-                </Drawer.Navigator>
-            </NavigationContainer>
-            <Toast ref={(ref) => Toast.setRef(ref)} />
-        </>
-
-    )
-}
+          {isAuth ? null : (
+            <>
+              <Drawer.Screen
+                name="Login_Screen"
+                component={Login}
+                options={{
+                  title: 'Giriş Yap',
+                  drawerIcon: ({focused}) => {
+                    let iconColor = focused ? 'red' : 'white';
+                    return createIcon('arrow-right-to-bracket', iconColor);
+                  },
+                }}
+              />
+              <Drawer.Screen
+                name="Register_Screen"
+                component={Register}
+                options={{
+                  title: 'Kayıt Ol',
+                  drawerIcon: ({focused}) => {
+                    let iconColor = focused ? 'red' : 'white';
+                    return createIcon('user-plus', iconColor);
+                  },
+                }}
+              />
+            </>
+          )}
+        </Drawer.Navigator>
+      </NavigationContainer>
+      <Toast ref={ref => Toast.setRef(ref)} />
+    </>
+  );
+};
 
 export default MainApp;
