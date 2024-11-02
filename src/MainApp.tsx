@@ -46,6 +46,10 @@ import Landslide from './pages/GuideScreens/Landslide';
 import Login from './pages/LoginScreens/Login';
 import Register from './pages/RegisterScreen/Register';
 
+import QueryBuild from './pages/GetInfoScreens/Query_Build';
+import HavocReport from './pages/GetInfoScreens/Havoc_Report';
+import ParentPage from './pages/GetInfoScreens/Parent_Page';
+
 import ProfileMain from './pages/ProfileScreens/Profile_Main';
 import Custom_Drawer_Content from './Components/Custom_Drawer_Content';
 import Toast from 'react-native-toast-message';
@@ -69,6 +73,31 @@ const ProfileStack = () => {
       <Stack.Screen
         name="ProfileMainScreen"
         component={ProfileMain}
+        options={{}}
+      />
+    </Stack.Navigator>
+  );
+};
+
+const GetInfoStack = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Stack.Screen
+        name="ParentPage_Screen"
+        component={ParentPage}
+        options={{}}
+      />
+      <Stack.Screen
+        name="QueryBuild_Screen"
+        component={QueryBuild}
+        options={{}}
+      />
+      <Stack.Screen
+        name="HavocReport_Screen"
+        component={HavocReport}
         options={{}}
       />
     </Stack.Navigator>
@@ -316,6 +345,17 @@ const MainApp = () => {
               drawerIcon: ({focused}) => {
                 let iconColor = focused ? 'red' : 'white';
                 return createIcon('map-location-dot', iconColor);
+              },
+            }}
+          />
+          <Drawer.Screen
+            name="GetInfo_Screen"
+            component={GetInfoStack}
+            options={{
+              title: 'Hasar Sorgula',
+              drawerIcon: ({focused}) => {
+                let iconColor = focused ? 'red' : 'white';
+                return createIcon('circle-info', iconColor);
               },
             }}
           />

@@ -6,6 +6,7 @@ import {useSelector} from 'react-redux';
 
 const Home = () => {
   const isAuth = useSelector(({user}) => user.isAuth);
+
   return (
     <View style={styles.container}>
       <View style={styles.left_column}>
