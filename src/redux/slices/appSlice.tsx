@@ -13,11 +13,11 @@ export const saveHavocReport = createAsyncThunk(
   },
 );
 
-const userSlice = createSlice({
+const appSlice = createSlice({
   name: 'app',
   initialState,
   reducers: {},
   extraReducers: builder => {},
 });
 
-export default userSlice.reducer;
+export default appSlice.reducer;

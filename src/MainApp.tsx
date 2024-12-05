@@ -47,8 +47,6 @@ import Login from './pages/LoginScreens/Login';
 import Register from './pages/RegisterScreen/Register';
 
 import QueryBuild from './pages/GetInfoScreens/Query_Build';
-import HavocReport from './pages/GetInfoScreens/Havoc_Report';
-import ParentPage from './pages/GetInfoScreens/Parent_Page';
 
 import ProfileMain from './pages/ProfileScreens/Profile_Main';
 import Custom_Drawer_Content from './Components/Custom_Drawer_Content';
@@ -58,9 +56,6 @@ const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
 import {legacy_createStore as createStore} from 'redux';
-
-import reducers from './Context/reducers';
-import initialState from './Context/store';
 
 import {Provider, useSelector} from 'react-redux';
 
@@ -86,18 +81,8 @@ const GetInfoStack = () => {
         headerShown: false,
       }}>
       <Stack.Screen
-        name="ParentPage_Screen"
-        component={ParentPage}
-        options={{}}
-      />
-      <Stack.Screen
         name="QueryBuild_Screen"
         component={QueryBuild}
-        options={{}}
-      />
-      <Stack.Screen
-        name="HavocReport_Screen"
-        component={HavocReport}
         options={{}}
       />
     </Stack.Navigator>
@@ -235,7 +220,6 @@ const flagImg = () => (
 
 const MainApp = () => {
   const isAuth = useSelector(({user}) => user.isAuth);
-  console.log(isAuth);
   return (
     <>
       <NavigationContainer>

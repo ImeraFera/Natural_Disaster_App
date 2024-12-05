@@ -5,6 +5,9 @@ import Geolocation from '@react-native-community/geolocation';
 import styles from '../../styles/Assembly_Area';
 import {Button, Text} from 'react-native-paper';
 import axios from 'axios';
+import {GeoFirestore} from 'geofirestore';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
 
 const Assembly_Area = () => {
   const [region, setRegion] = useState({
@@ -16,6 +19,9 @@ const Assembly_Area = () => {
 
   const [userLocation, setUserLocation] = useState(null);
   const mapRef = useRef(null);
+
+  const geofirestore = new GeoFirestore(firebase.firestore());
+  const geoCollection = geofirestore.collection('locations');
 
   const findLocation = () => {
     Geolocation.getCurrentPosition(
@@ -37,6 +43,21 @@ const Assembly_Area = () => {
         const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`;
 
         try {
+          const query = geoCollection.near({
+            center: new firebase.firestore.GeoPoint(latitude, longitude),
+            radius: 5,
+          });
+
+          const snapshot = await query.get();
+
+          const nearestLocations = snapshot.docs
+            .map(doc => ({
+              id: doc.id,
+              ...doc.data(),
+            }))
+            .slice(0, 3);
+
+          console.log('En Yakın Konumlar:', nearestLocations);
           const response = await axios.get(url);
           const address = response.data.address;
           console.log('Address:', address);

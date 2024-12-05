@@ -16,80 +16,178 @@ import MapView, {Marker} from 'react-native-maps';
 import axios from 'axios';
 import Geolocation from '@react-native-community/geolocation';
 const geocodeApiKey = '67260f5fb929a660736537xqte7b09a';
+import firestore, {getFirestore} from '@react-native-firebase/firestore';
+import {useSelector} from 'react-redux';
+import Toast from 'react-native-toast-message';
+import {calculateDistance} from '../../utils/calculateDistance';
+import * as geofirestore from 'geofirestore';
 
+const getLocation = () =>
+  new Promise((resolve, reject) => {
+    Geolocation.getCurrentPosition(
+      position => resolve(position),
+      error => reject(error),
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
+  });
 const Query_Build = () => {
-  const [isLoading, setisLoading] = useState(false);
-  const [visibleDialog, setvisibleDialog] = useState(false);
-  const [userLocation, setuserLocation] = useState(null);
-
-  const hideDialog = () => {
-    setvisibleDialog(false);
-  };
-
   const [region, setRegion] = useState({
-    latitude: 41.0082,
-    longitude: 28.9784,
+    latitude: 41.6132807816993,
+    longitude: 32.32117788484015,
     latitudeDelta: 0.05,
     longitudeDelta: 0.05,
   });
-
+  const [isLoading, setisLoading] = useState(false);
+  const [visibleDialog, setvisibleDialog] = useState(false);
+  const isAuth = useSelector(({user}) => user.isAuth);
+  const [userLocation, setUserLocation] = useState(null);
+  const [reports, setReports] = useState([]);
   const mapRef = useRef(null);
 
-  const findLocation = () => {
-    return new Promise((resolve, reject) => {
-      Geolocation.getCurrentPosition(
-        position => {
-          const coords = position.coords;
-          resolve(coords);
-        },
-        error => {
-          console.error(error);
-          reject(error);
-        },
-        {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-      );
-    });
-  };
+  const queryByAddress = async values => {
+    setisLoading(true);
 
-  const getCoordinates = async ({province, district, street, neighborhood}) => {
+    const {province, district, street, neighborhood} = values;
+    const address =
+      street + ',' + neighborhood + ',' + district + ',' + province;
+    const GeoFirestore = geofirestore.initializeApp(firestore());
+
     try {
-      const response = await axios.get(
-        `https://nominatim.openstreetmap.org/search?q=${province}&format=json`,
-      );
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+        address,
+      )}&format=json&addressdetails=1`;
 
-      console.log('response ', response);
+      const response = await axios.get(url);
+      const {lat, lon} = response.data[0];
 
-      if (response.data.length > 0) {
-        const {lat, lon} = response.data[0];
-        const updatedRegion = {
+      const query = GeoFirestore.collection('havoc_reports').near({
+        center: new firestore.GeoPoint(parseFloat(lat), parseFloat(lon)),
+        radius: 1,
+      });
+
+      const results = await query.get();
+      const reports = results.docs.map(doc => doc.data());
+      setReports(reports);
+
+      mapRef?.current.animateToRegion(
+        {
           latitude: parseFloat(lat),
           longitude: parseFloat(lon),
-          latitudeDelta: 0.05,
-          longitudeDelta: 0.05,
-        };
-
-        setRegion(updatedRegion);
-
-        if (mapRef.current) {
-          mapRef.current.animateToRegion(updatedRegion, 1000);
-        }
-      } else {
-        console.log('Konum bilgisi bulunamadı.');
-      }
+          latitudeDelta: 0.0015,
+          longitudeDelta: 0.0015,
+        },
+        1000,
+      );
     } catch (error) {
-      console.error('API isteği başarısız oldu:', error);
+      console.log(error);
+    } finally {
+      setisLoading(false);
     }
   };
 
-  const handleClickSubmit = async values => {
-    console.log(values);
-    await getCoordinates(values);
-    // console.log(region);
+  const queryByLocation = async () => {
+    setisLoading(true);
+    const GeoFirestore = geofirestore.initializeApp(firestore());
+    try {
+      const coords = await getLocation();
+      const {latitude, longitude} = coords.coords;
+
+      const query = GeoFirestore.collection('havoc_reports').near({
+        center: new firestore.GeoPoint(latitude, longitude),
+        radius: 0.5,
+      });
+
+      const results = await query.get();
+      const reports = results.docs.map(doc => doc.data());
+      setReports(reports);
+
+      mapRef.current.animateToRegion(
+        {
+          latitude: latitude,
+          longitude: longitude,
+          latitudeDelta: 0.001,
+          longitudeDelta: 0.001,
+        },
+        1000,
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setisLoading(false);
+    }
   };
 
-  const makeReport = async () => {
+  const openMakeReportDialog = async () => {
+    // if (!isAuth) {
+    //   return Toast.show({
+    //     type: 'error',
+    //     position: 'top',
+    //     text1: 'Hata',
+    //     text2: 'Lütfen giriş yapınız.',
+    //   });
+    // }
+
+    setisLoading(true);
     try {
-      setisLoading(true);
+      setReports([]);
+
+      const coords = await getLocation();
+      const {latitude, longitude} = coords.coords;
+
+      mapRef.current.animateToRegion(
+        {
+          latitude: latitude,
+          longitude: longitude,
+          latitudeDelta: 0.001,
+          longitudeDelta: 0.001,
+        },
+        1000,
+      );
+
+      const res = await axios.get(
+        `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`,
+      );
+
+      // console.log(res.data.address.amenity);
+
+      setUserLocation({
+        latitude,
+        longitude,
+        address: res.data.address.amenity,
+      });
+
+      setisLoading(false);
+      setvisibleDialog(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const reportByLocation = async () => {
+    setisLoading(true);
+
+    const GeoFirestore = geofirestore.initializeApp(firestore());
+    const geocollection = GeoFirestore.collection('havoc_reports');
+
+    try {
+      const coords = await getLocation();
+      const {latitude, longitude} = coords.coords;
+
+      const coordinates = new firestore.GeoPoint(latitude, longitude);
+
+      const doc = await geocollection.add({
+        coordinates,
+        timestamp: firestore.FieldValue.serverTimestamp(),
+      });
+
+      console.log('Rapor başarıyla kaydedildi!');
+
+      Toast.show({
+        type: 'success',
+        position: 'top',
+        text1: 'İşlem Başarılı',
+        text2: 'Raporunuz kaydedildi.',
+      });
 
       setvisibleDialog(false);
     } catch (error) {
@@ -99,46 +197,8 @@ const Query_Build = () => {
     }
   };
 
-  const handleClickReportByLocationModal = async () => {
-    try {
-      setisLoading(true);
-      const coords = await findLocation();
-
-      const response = await axios.get(
-        `https://geocode.maps.co/reverse?lat=${coords.latitude}&lon=${coords.longitude}&api_key=${geocodeApiKey}`,
-      );
-      console.log(response.data);
-      if (response.data) {
-        const address = response.data.display_name;
-
-        console.log('Detaylı Adres:', address);
-
-        if (mapRef.current) {
-          mapRef.current.animateToRegion(
-            {
-              latitude: coords.latitude,
-              longitude: coords.longitude,
-              latitudeDelta: 0.001,
-              longitudeDelta: 0.001,
-            },
-            1000,
-          );
-        }
-
-        setuserLocation({
-          latitude: coords.latitude,
-          longitude: coords.longitude,
-          address: address,
-        });
-        setvisibleDialog(true);
-      } else {
-        console.log('Detaylı adres bilgisi bulunamadı.');
-      }
-    } catch (error) {
-      console.error('Hata:', error);
-    } finally {
-      setisLoading(false);
-    }
+  const hideDialog = () => {
+    setvisibleDialog(false);
   };
 
   return (
@@ -152,7 +212,7 @@ const Query_Build = () => {
           }}>
           <Button
             mode="contained"
-            onPress={handleClickReportByLocationModal}
+            onPress={openMakeReportDialog}
             loading={isLoading}
             disabled={isLoading}
             buttonColor="red">
@@ -170,15 +230,29 @@ const Query_Build = () => {
               flex: 1,
               width: '100%',
             }}
-            initialRegion={region}
             region={region}>
-            {userLocation && (
+            {userLocation ? (
               <Marker
-                pinColor={'cyan'}
+                title="Konumun"
+                titleVisibility="adaptive"
                 coordinate={userLocation}
-                title="Senin Konumun"
-              />
-            )}
+                pinColor="cyan"></Marker>
+            ) : null}
+
+            {reports?.map((report, index) => {
+              const {latitude, longitude} = report.coordinates;
+
+              return (
+                <Marker
+                  key={index}
+                  title={'report' + index}
+                  pinColor="red"
+                  titleVisibility="adaptive"
+                  coordinate={{latitude, longitude}}
+                  // onPress={() => console.log('first')}
+                />
+              );
+            })}
           </MapView>
         </View>
 
@@ -189,7 +263,7 @@ const Query_Build = () => {
           }}>
           <Button
             mode="contained"
-            onPress={findLocation}
+            onPress={queryByLocation}
             loading={isLoading}
             disabled={isLoading}
             buttonColor="red">
@@ -206,7 +280,7 @@ const Query_Build = () => {
             <Card
               style={{width: '100%', height: '100%', paddingVertical: 'auto'}}>
               <Formik
-                onSubmit={handleClickSubmit}
+                onSubmit={queryByAddress}
                 initialValues={{
                   province: '',
                   district: '',
@@ -290,19 +364,24 @@ const Query_Build = () => {
       </View>
       <Portal>
         <Dialog visible={visibleDialog} onDismiss={hideDialog}>
-          <Dialog.Title>Onay</Dialog.Title>
-          <Dialog.Content>
-            <Paragraph>
-              Tespit edilen konum bilgilerinin doğruluğunu kontrol ediniz.
-            </Paragraph>
-            <Paragraph>Konum Bilgisi: {userLocation?.address}</Paragraph>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideDialog}>İptal</Button>
-            <Button mode="contained" onPress={makeReport}>
-              Rapor Et
-            </Button>
-          </Dialog.Actions>
+          <>
+            <Dialog.Title>Dikkat</Dialog.Title>
+            <Dialog.Content>
+              <Paragraph>
+                Tespit edilen konum bilgilerinin doğruluğunu kontrol ediniz.
+              </Paragraph>
+              <Paragraph>Konum Bilgisi: {userLocation?.address}</Paragraph>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={hideDialog}>İptal</Button>
+              <Button
+                loading={isLoading}
+                mode="contained"
+                onPress={reportByLocation}>
+                Rapor Et
+              </Button>
+            </Dialog.Actions>
+          </>
         </Dialog>
       </Portal>
     </Provider>
