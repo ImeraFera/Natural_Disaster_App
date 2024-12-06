@@ -14,22 +14,15 @@ import {
 import {Formik} from 'formik';
 import MapView, {Marker} from 'react-native-maps';
 import axios from 'axios';
-import Geolocation from '@react-native-community/geolocation';
 const geocodeApiKey = '67260f5fb929a660736537xqte7b09a';
 import firestore, {getFirestore} from '@react-native-firebase/firestore';
 import {useSelector} from 'react-redux';
 import Toast from 'react-native-toast-message';
-import {calculateDistance} from '../../utils/calculateDistance';
 import * as geofirestore from 'geofirestore';
-
-const getLocation = () =>
-  new Promise((resolve, reject) => {
-    Geolocation.getCurrentPosition(
-      position => resolve(position),
-      error => reject(error),
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    );
-  });
+import {launchCamera} from 'react-native-image-picker';
+import storage from '@react-native-firebase/storage';
+import {Image} from 'react-native-elements';
+import {getLocation} from '../../utils/getLocation';
 const Query_Build = () => {
   const [region, setRegion] = useState({
     latitude: 41.6132807816993,
@@ -42,6 +35,8 @@ const Query_Build = () => {
   const isAuth = useSelector(({user}) => user.isAuth);
   const [userLocation, setUserLocation] = useState(null);
   const [reports, setReports] = useState([]);
+  const [dialogType, setDialogType] = useState(null);
+  const [selectedReport, setSelectedReport] = useState(null);
   const mapRef = useRef(null);
 
   const queryByAddress = async values => {
@@ -105,8 +100,8 @@ const Query_Build = () => {
         {
           latitude: latitude,
           longitude: longitude,
-          latitudeDelta: 0.001,
-          longitudeDelta: 0.001,
+          latitudeDelta: 0.0015,
+          longitudeDelta: 0.0015,
         },
         1000,
       );
@@ -117,6 +112,62 @@ const Query_Build = () => {
     }
   };
 
+  const reportByLocation = async () => {
+    setisLoading(true);
+    const GeoFirestore = geofirestore.initializeApp(firestore());
+    const geocollection = GeoFirestore.collection('havoc_reports');
+    try {
+      const coords = await getLocation();
+      const {latitude, longitude} = coords.coords;
+
+      const coordinates = new firestore.GeoPoint(latitude, longitude);
+
+      const result = await launchCamera({
+        mediaType: 'photo',
+        cameraType: 'back',
+        saveToPhotos: true,
+      });
+
+      if (result.didCancel) {
+        console.log('Kullanıcı fotoğraf çekmeyi iptal etti.');
+        return;
+      }
+
+      if (result.errorMessage) {
+        console.log('Hata:', result.errorMessage);
+        return;
+      }
+
+      const photoUri = result.assets[0].uri;
+
+      const fileName = `report_${Date.now()}.jpg`;
+      const reference = storage().ref(`/havoc_reports/${fileName}`);
+      await reference.putFile(photoUri);
+
+      const photoUrl = await reference.getDownloadURL();
+
+      await geocollection.add({
+        coordinates,
+        photoUrl,
+        timestamp: firestore.FieldValue.serverTimestamp(),
+      });
+
+      console.log('Rapor başarıyla kaydedildi!');
+
+      Toast.show({
+        type: 'success',
+        position: 'top',
+        text1: 'İşlem Başarılı',
+        text2: 'Raporunuz kaydedildi.',
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setisLoading(false);
+      setvisibleDialog(false);
+      setDialogType(null);
+    }
+  };
   const openMakeReportDialog = async () => {
     // if (!isAuth) {
     //   return Toast.show({
@@ -126,11 +177,11 @@ const Query_Build = () => {
     //     text2: 'Lütfen giriş yapınız.',
     //   });
     // }
-
+    setDialogType('makeReport');
     setisLoading(true);
-    try {
-      setReports([]);
+    setReports([]);
 
+    try {
       const coords = await getLocation();
       const {latitude, longitude} = coords.coords;
 
@@ -148,48 +199,20 @@ const Query_Build = () => {
         `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`,
       );
 
-      // console.log(res.data.address.amenity);
+      console.log(res.data.address);
+      const {province, road, suburb, town} = res.data.address;
+      const address =
+        (road ? road : '') +
+        (suburb ? ', ' + suburb : '') +
+        (town ? ', ' + town : '') +
+        (province ? ', ' + province : '');
 
       setUserLocation({
         latitude,
         longitude,
-        address: res.data.address.amenity,
+        address,
       });
-
-      setisLoading(false);
       setvisibleDialog(true);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const reportByLocation = async () => {
-    setisLoading(true);
-
-    const GeoFirestore = geofirestore.initializeApp(firestore());
-    const geocollection = GeoFirestore.collection('havoc_reports');
-
-    try {
-      const coords = await getLocation();
-      const {latitude, longitude} = coords.coords;
-
-      const coordinates = new firestore.GeoPoint(latitude, longitude);
-
-      const doc = await geocollection.add({
-        coordinates,
-        timestamp: firestore.FieldValue.serverTimestamp(),
-      });
-
-      console.log('Rapor başarıyla kaydedildi!');
-
-      Toast.show({
-        type: 'success',
-        position: 'top',
-        text1: 'İşlem Başarılı',
-        text2: 'Raporunuz kaydedildi.',
-      });
-
-      setvisibleDialog(false);
     } catch (error) {
       console.log(error);
     } finally {
@@ -199,6 +222,16 @@ const Query_Build = () => {
 
   const hideDialog = () => {
     setvisibleDialog(false);
+  };
+
+  const openReportDetailsDialog = report => {
+    setDialogType('showReportDetails');
+    setSelectedReport(report);
+    setvisibleDialog(true);
+    try {
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -231,7 +264,7 @@ const Query_Build = () => {
               width: '100%',
             }}
             region={region}>
-            {userLocation ? (
+            {userLocation && reports.length == 0 ? (
               <Marker
                 title="Konumun"
                 titleVisibility="adaptive"
@@ -249,7 +282,7 @@ const Query_Build = () => {
                   pinColor="red"
                   titleVisibility="adaptive"
                   coordinate={{latitude, longitude}}
-                  // onPress={() => console.log('first')}
+                  onPress={() => openReportDetailsDialog(report)}
                 />
               );
             })}
@@ -364,24 +397,57 @@ const Query_Build = () => {
       </View>
       <Portal>
         <Dialog visible={visibleDialog} onDismiss={hideDialog}>
-          <>
-            <Dialog.Title>Dikkat</Dialog.Title>
-            <Dialog.Content>
-              <Paragraph>
-                Tespit edilen konum bilgilerinin doğruluğunu kontrol ediniz.
-              </Paragraph>
-              <Paragraph>Konum Bilgisi: {userLocation?.address}</Paragraph>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={hideDialog}>İptal</Button>
-              <Button
-                loading={isLoading}
-                mode="contained"
-                onPress={reportByLocation}>
-                Rapor Et
-              </Button>
-            </Dialog.Actions>
-          </>
+          {dialogType === 'makeReport' ? (
+            <>
+              <Dialog.Title>Dikkat</Dialog.Title>
+              <Dialog.Content>
+                <Paragraph>
+                  Tespit edilen konum bilgilerinin doğruluğunu kontrol ediniz.
+                </Paragraph>
+                <Paragraph>Konum Bilgisi: {userLocation?.address}</Paragraph>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={hideDialog}>İptal</Button>
+                <Button
+                  loading={isLoading}
+                  mode="contained"
+                  onPress={reportByLocation}>
+                  Rapor Et
+                </Button>
+              </Dialog.Actions>
+            </>
+          ) : null}
+
+          {dialogType === 'showReportDetails' && (
+            <>
+              <Dialog.Title>Rapor Bilgisi</Dialog.Title>
+              <Dialog.Content>
+                <View
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    flexDirection: 'row',
+                  }}>
+                  <Paragraph>Ahmet Sayan</Paragraph>
+                  <Paragraph>12.03.2004</Paragraph>
+                </View>
+
+                <Image
+                  source={{uri: selectedReport.photoUrl}}
+                  style={{width: '100%', height: 250}}
+                />
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={hideDialog}>Kapat</Button>
+                {/* <Button
+                  loading={isLoading}
+                  mode="contained"
+                  onPress={reportByLocation}>
+                  Rapor Et
+                </Button> */}
+              </Dialog.Actions>
+            </>
+          )}
         </Dialog>
       </Portal>
     </Provider>
