@@ -12,11 +12,18 @@ import {register} from '../redux/slices/userSlice';
 import {validationSchema} from '../validationSchemas/RegisterSchema';
 
 const Register_Card = () => {
+  const formInitialValues = {
+    name: '',
+    lastName: '',
+    birthday: '',
+    mail: '',
+    tcNo: '',
+    password: '',
+  };
   const [repeatPassword, setrepeatPassword] = useState('');
+  const [isLoading, setisLoading] = useState(false);
   const navigation = useNavigation();
   const dispatch = useDispatch();
-
-  const [isLoading, setisLoading] = useState(false);
 
   const handleRegister = async values => {
     const {password} = values;
@@ -55,66 +62,86 @@ const Register_Card = () => {
   };
 
   return (
-    <>
-      <Card style={{width: '90%'}}>
-        <Formik
-          initialValues={{mail: '', tcNo: '', password: ''}}
-          validationSchema={validationSchema}
-          onSubmit={handleRegister}>
-          {({handleChange, handleSubmit, values}) => (
-            <>
-              <Card.Content>
-                <TextInput
-                  style={styles.input}
-                  mode="outlined"
-                  label="TC No"
-                  inputMode="numeric"
-                  maxLength={11}
-                  activeOutlineColor="red"
-                  value={values.tcNo}
-                  onChangeText={handleChange('tcNo')}
-                />
-                <TextInput
-                  style={styles.input}
-                  mode="outlined"
-                  label="Email"
-                  activeOutlineColor="red"
-                  value={values.mail}
-                  onChangeText={handleChange('mail')}
-                />
-                <TextInput
-                  style={styles.input}
-                  mode="outlined"
-                  label="Şifre"
-                  secureTextEntry={true}
-                  activeOutlineColor="red"
-                  value={values.password}
-                  onChangeText={handleChange('password')}
-                />
-                <TextInput
-                  style={styles.input}
-                  mode="outlined"
-                  label="Şifre Tekrar"
-                  secureTextEntry={true}
-                  activeOutlineColor="red"
-                  value={repeatPassword}
-                  onChangeText={text => setrepeatPassword(text)}
-                />
-              </Card.Content>
-              <Card.Actions style={{alignSelf: 'center'}}>
-                <Button
-                  onPress={handleSubmit}
-                  mode="contained"
-                  loading={isLoading}
-                  buttonColor="red">
-                  KAYIT OL
-                </Button>
-              </Card.Actions>
-            </>
-          )}
-        </Formik>
-      </Card>
-    </>
+    <Card style={{width: '100%'}}>
+      <Formik
+        initialValues={formInitialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleRegister}>
+        {({handleChange, handleSubmit, values}) => (
+          <>
+            <Card.Content>
+              <TextInput
+                style={styles.input}
+                mode="outlined"
+                label="Ad"
+                id="name"
+                inputMode="text"
+                activeOutlineColor="red"
+                value={values.name}
+                onChangeText={handleChange('name')}
+              />
+              <TextInput
+                style={styles.input}
+                mode="outlined"
+                label="Soyad"
+                id="lastName"
+                inputMode="text"
+                activeOutlineColor="red"
+                value={values.lastName}
+                onChangeText={handleChange('lastName')}
+              />
+              <TextInput
+                style={styles.input}
+                mode="outlined"
+                label="TC No"
+                id="tcNo"
+                inputMode="numeric"
+                maxLength={11}
+                activeOutlineColor="red"
+                value={values.tcNo}
+                onChangeText={handleChange('tcNo')}
+              />
+              <TextInput
+                style={styles.input}
+                mode="outlined"
+                label="Email"
+                activeOutlineColor="red"
+                value={values.mail}
+                onChangeText={handleChange('mail')}
+              />
+              <TextInput
+                style={styles.input}
+                mode="outlined"
+                label="Şifre"
+                secureTextEntry={true}
+                activeOutlineColor="red"
+                value={values.password}
+                onChangeText={handleChange('password')}
+              />
+              <TextInput
+                style={styles.input}
+                mode="outlined"
+                label="Şifre Tekrar"
+                secureTextEntry={true}
+                activeOutlineColor="red"
+                value={repeatPassword}
+                onChangeText={text => setrepeatPassword(text)}
+              />
+            </Card.Content>
+            <Card.Actions style={{alignSelf: 'center'}}>
+              <Button
+                onPress={handleSubmit}
+                mode="contained"
+                loading={isLoading}
+                disabled={isLoading}
+                buttonColor="red">
+                KAYIT OL
+              </Button>
+            </Card.Actions>
+          </>
+        )}
+      </Formik>
+    </Card>
   );
 };
 

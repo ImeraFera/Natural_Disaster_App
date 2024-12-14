@@ -56,10 +56,12 @@ const Query_Build = () => {
       const response = await axios.get(url);
       const {lat, lon} = response.data[0];
 
-      const query = GeoFirestore.collection('havoc_reports').near({
-        center: new firestore.GeoPoint(parseFloat(lat), parseFloat(lon)),
-        radius: 1,
-      });
+      const query = GeoFirestore.collection('havoc_reports')
+        .near({
+          center: new firestore.GeoPoint(parseFloat(lat), parseFloat(lon)),
+          radius: 1,
+        })
+        .where('isConfirmed', '==', true);
 
       const results = await query.get();
       const reports = results.docs.map(doc => doc.data());
@@ -88,10 +90,12 @@ const Query_Build = () => {
       const coords = await getLocation();
       const {latitude, longitude} = coords.coords;
 
-      const query = GeoFirestore.collection('havoc_reports').near({
-        center: new firestore.GeoPoint(latitude, longitude),
-        radius: 0.5,
-      });
+      const query = GeoFirestore.collection('havoc_reports')
+        .near({
+          center: new firestore.GeoPoint(latitude, longitude),
+          radius: 0.5,
+        })
+        .where('isConfirmed', '==', true);
 
       const results = await query.get();
       const reports = results.docs.map(doc => doc.data());

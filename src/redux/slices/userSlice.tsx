@@ -1,6 +1,7 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import axios from 'axios';
 
 const initialState = {
   name: '',
@@ -37,6 +38,16 @@ export const register = createAsyncThunk(
   'user/register',
   async ({mail, password, tcNo}) => {
     try {
+      const isRealPerson = await axios.post(
+        'https://api.kadircolak.com/TCKimlik/Home/Sorgula',
+        {
+          ad: name,
+          soyad: lastName,
+          // birthYear: birthday
+          tcNo: tcNo,
+        },
+      );
+
       const newUser = await auth().createUserWithEmailAndPassword(
         mail,
         password,
@@ -212,8 +223,6 @@ const userSlice = createSlice({
       .addCase(getAllHavocReports.fulfilled, (state, {payload}) => {
         state.status = 'succeeded';
         state.allReports = payload;
-
-        console.log(payload);
       })
       .addCase(getAllHavocReports.rejected, (state, action) => {
         state.status = 'failed';
