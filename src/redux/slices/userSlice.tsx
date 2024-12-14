@@ -15,6 +15,8 @@ const initialState = {
   status: '',
   error: '',
   uid: '',
+  role: null,
+  allReports: [],
 };
 export const updateUser = createAsyncThunk('user/updateUser', async values => {
   try {
@@ -112,6 +114,23 @@ export const logout = createAsyncThunk('user/logout', async () => {
   await auth().signOut();
 });
 
+export const getAllHavocReports = createAsyncThunk(
+  'user/getAllReports',
+  async () => {
+    try {
+      const snapshot = await firestore().collection('havoc_reports').get();
+      const allReports = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      return allReports;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
+);
+
 const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -153,7 +172,7 @@ const userSlice = createSlice({
         state.tcNo = payload.tcNo;
         state.tel = payload.tel;
         state.uid = payload.uid;
-
+        state.role = payload.role;
         console.log('login payload : ', payload);
       })
       .addCase(login.rejected, (state, action) => {
@@ -185,6 +204,18 @@ const userSlice = createSlice({
         state.uid = payload.uid;
       })
       .addCase(updateUser.rejected, (state, action) => {
+        state.status = 'failed';
+      })
+      .addCase(getAllHavocReports.pending, state => {
+        state.status = 'loading';
+      })
+      .addCase(getAllHavocReports.fulfilled, (state, {payload}) => {
+        state.status = 'succeeded';
+        state.allReports = payload;
+
+        console.log(payload);
+      })
+      .addCase(getAllHavocReports.rejected, (state, action) => {
         state.status = 'failed';
       });
   },

@@ -12,120 +12,121 @@ import {getLocation} from '../../utils/getLocation';
 const GeoFirestore = geofirestore.initializeApp(firestore());
 const geocollection = GeoFirestore.collection('assembly_areas');
 
-const setDatas = async () => {
-  const arr = [
-    {
-      name: 'Acil Durum Toplanma Alanı 50',
-      coordinates: new firestore.GeoPoint(
-        41.601903667319505,
-        32.31545588097394,
-      ),
-      timestamp: firestore.FieldValue.serverTimestamp(),
-    },
-    {
-      name: 'Acil Durum Toplanma Alanı 49',
-      coordinates: new firestore.GeoPoint(
-        41.612326579388004,
-        32.32204926508918,
-      ),
-      timestamp: firestore.FieldValue.serverTimestamp(),
-    },
-    {
-      name: 'Acil Durum Toplanma Alanı 7',
-      coordinates: new firestore.GeoPoint(41.6220057255884, 32.30874019035722),
-      timestamp: firestore.FieldValue.serverTimestamp(),
-    },
-    {
-      name: 'Acil Durum Toplanma Alanı 3',
-      coordinates: new firestore.GeoPoint(
-        41.62653592889241,
-        32.317884950930726,
-      ),
-      timestamp: firestore.FieldValue.serverTimestamp(),
-    },
-    {
-      name: 'Acil Durum Toplanma Alanı 4',
-      coordinates: new firestore.GeoPoint(
-        41.629023309497065,
-        32.32021661611022,
-      ),
-      timestamp: firestore.FieldValue.serverTimestamp(),
-    },
-    {
-      name: 'Acil Durum Toplanma Alanı 8',
-      coordinates: new firestore.GeoPoint(41.62693537243876, 32.32405792705323),
-      timestamp: firestore.FieldValue.serverTimestamp(),
-    },
-    {
-      name: 'Acil Durum Toplanma Alanı 22',
-      coordinates: new firestore.GeoPoint(
-        41.634438078103734,
-        32.32727258657756,
-      ),
-      timestamp: firestore.FieldValue.serverTimestamp(),
-    },
-    {
-      name: 'Acil Durum Toplanma Alanı 20',
-      coordinates: new firestore.GeoPoint(41.63662895886768, 32.32684311741087),
-      timestamp: firestore.FieldValue.serverTimestamp(),
-    },
-    {
-      name: 'Acil Durum Toplanma Alanı 39',
-      coordinates: new firestore.GeoPoint(41.636454419186784, 32.3315387630921),
-      timestamp: firestore.FieldValue.serverTimestamp(),
-    },
-    {
-      name: 'Acil Durum Toplanma Alanı 40',
-      coordinates: new firestore.GeoPoint(
-        41.63489010829583,
-        32.335074641135975,
-      ),
-      timestamp: firestore.FieldValue.serverTimestamp(),
-    },
-    {
-      name: 'Acil Durum Toplanma Alanı 42',
-      coordinates: new firestore.GeoPoint(41.6398140993528, 32.33981382496656),
-      timestamp: firestore.FieldValue.serverTimestamp(),
-    },
-    {
-      name: 'Acil Durum Toplanma Alanı 44',
-      coordinates: new firestore.GeoPoint(41.63970615197379, 32.34536176143301),
-      timestamp: firestore.FieldValue.serverTimestamp(),
-    },
-    {
-      name: 'Acil Durum Toplanma Alanı 48',
-      coordinates: new firestore.GeoPoint(41.6318201642558, 32.336061647388526),
-      timestamp: firestore.FieldValue.serverTimestamp(),
-    },
-    {
-      name: 'Acil Durum Toplanma Alanı 29',
-      coordinates: new firestore.GeoPoint(
-        41.621662040324004,
-        32.344373646832885,
-      ),
-      timestamp: firestore.FieldValue.serverTimestamp(),
-    },
-    {
-      name: 'Acil Durum Toplanma Alanı 32',
-      coordinates: new firestore.GeoPoint(
-        41.62138190872913,
-        32.347612805997635,
-      ),
-      timestamp: firestore.FieldValue.serverTimestamp(),
-    },
-  ];
+// ? Alttaki yorum satırı firebasede direkt olarak koordinat eklenmediği için var normal çalışmada yorum satırı olarak kalmalı. Yeni toplanma alanları eklenirken yorum satırlarını kaldırıp ekle.
+// const setDatas = async () => {
+//   const arr = [
+//     {
+//       name: 'Acil Durum Toplanma Alanı 50',
+//       coordinates: new firestore.GeoPoint(
+//         41.601903667319505,
+//         32.31545588097394,
+//       ),
+//       timestamp: firestore.FieldValue.serverTimestamp(),
+//     },
+//     {
+//       name: 'Acil Durum Toplanma Alanı 49',
+//       coordinates: new firestore.GeoPoint(
+//         41.612326579388004,
+//         32.32204926508918,
+//       ),
+//       timestamp: firestore.FieldValue.serverTimestamp(),
+//     },
+//     {
+//       name: 'Acil Durum Toplanma Alanı 7',
+//       coordinates: new firestore.GeoPoint(41.6220057255884, 32.30874019035722),
+//       timestamp: firestore.FieldValue.serverTimestamp(),
+//     },
+//     {
+//       name: 'Acil Durum Toplanma Alanı 3',
+//       coordinates: new firestore.GeoPoint(
+//         41.62653592889241,
+//         32.317884950930726,
+//       ),
+//       timestamp: firestore.FieldValue.serverTimestamp(),
+//     },
+//     {
+//       name: 'Acil Durum Toplanma Alanı 4',
+//       coordinates: new firestore.GeoPoint(
+//         41.629023309497065,
+//         32.32021661611022,
+//       ),
+//       timestamp: firestore.FieldValue.serverTimestamp(),
+//     },
+//     {
+//       name: 'Acil Durum Toplanma Alanı 8',
+//       coordinates: new firestore.GeoPoint(41.62693537243876, 32.32405792705323),
+//       timestamp: firestore.FieldValue.serverTimestamp(),
+//     },
+//     {
+//       name: 'Acil Durum Toplanma Alanı 22',
+//       coordinates: new firestore.GeoPoint(
+//         41.634438078103734,
+//         32.32727258657756,
+//       ),
+//       timestamp: firestore.FieldValue.serverTimestamp(),
+//     },
+//     {
+//       name: 'Acil Durum Toplanma Alanı 20',
+//       coordinates: new firestore.GeoPoint(41.63662895886768, 32.32684311741087),
+//       timestamp: firestore.FieldValue.serverTimestamp(),
+//     },
+//     {
+//       name: 'Acil Durum Toplanma Alanı 39',
+//       coordinates: new firestore.GeoPoint(41.636454419186784, 32.3315387630921),
+//       timestamp: firestore.FieldValue.serverTimestamp(),
+//     },
+//     {
+//       name: 'Acil Durum Toplanma Alanı 40',
+//       coordinates: new firestore.GeoPoint(
+//         41.63489010829583,
+//         32.335074641135975,
+//       ),
+//       timestamp: firestore.FieldValue.serverTimestamp(),
+//     },
+//     {
+//       name: 'Acil Durum Toplanma Alanı 42',
+//       coordinates: new firestore.GeoPoint(41.6398140993528, 32.33981382496656),
+//       timestamp: firestore.FieldValue.serverTimestamp(),
+//     },
+//     {
+//       name: 'Acil Durum Toplanma Alanı 44',
+//       coordinates: new firestore.GeoPoint(41.63970615197379, 32.34536176143301),
+//       timestamp: firestore.FieldValue.serverTimestamp(),
+//     },
+//     {
+//       name: 'Acil Durum Toplanma Alanı 48',
+//       coordinates: new firestore.GeoPoint(41.6318201642558, 32.336061647388526),
+//       timestamp: firestore.FieldValue.serverTimestamp(),
+//     },
+//     {
+//       name: 'Acil Durum Toplanma Alanı 29',
+//       coordinates: new firestore.GeoPoint(
+//         41.621662040324004,
+//         32.344373646832885,
+//       ),
+//       timestamp: firestore.FieldValue.serverTimestamp(),
+//     },
+//     {
+//       name: 'Acil Durum Toplanma Alanı 32',
+//       coordinates: new firestore.GeoPoint(
+//         41.62138190872913,
+//         32.347612805997635,
+//       ),
+//       timestamp: firestore.FieldValue.serverTimestamp(),
+//     },
+//   ];
 
-  try {
-    for (const data of arr) {
-      await geocollection.add(data);
-    }
-    console.log('Tüm belgeler başarıyla eklendi.');
-  } catch (error) {
-    console.log(error);
-  }
+//   try {
+//     for (const data of arr) {
+//       await geocollection.add(data);
+//     }
+//     console.log('Tüm belgeler başarıyla eklendi.');
+//   } catch (error) {
+//     console.log(error);
+//   }
 
-  await geocollection.add();
-};
+//   await geocollection.add();
+// };
 
 const Assembly_Area = () => {
   const [region, setRegion] = useState({
@@ -147,11 +148,12 @@ const Assembly_Area = () => {
       const coords = await getLocation();
       const {latitude, longitude} = coords.coords;
 
-      const query = geocollection.near({
-        center: new firestore.GeoPoint(latitude, longitude),
-        radius: 0.5,
-        limit: 3,
-      });
+      const query = geocollection
+        .near({
+          center: new firestore.GeoPoint(latitude, longitude),
+          radius: 2,
+        })
+        .limit(3);
 
       const results = await query.get();
       const docs = results.docs.map(doc => ({id: doc.id, ...doc.data()}));
@@ -187,9 +189,10 @@ const Assembly_Area = () => {
           Toplanma Alanları
         </Text>
         <Button
-          style={{backgroundColor: 'green'}}
+          style={{backgroundColor: isLoading ? 'lightgray' : 'green'}}
           textColor="white"
           loading={isLoading}
+          disabled={isLoading}
           onPress={findAssemblyAreas}>
           Konumumu Bul
         </Button>

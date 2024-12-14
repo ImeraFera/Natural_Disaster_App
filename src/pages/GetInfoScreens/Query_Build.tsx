@@ -33,6 +33,7 @@ const Query_Build = () => {
   const [isLoading, setisLoading] = useState(false);
   const [visibleDialog, setvisibleDialog] = useState(false);
   const isAuth = useSelector(({user}) => user.isAuth);
+  const username = useSelector(({user}) => user.name);
   const [userLocation, setUserLocation] = useState(null);
   const [reports, setReports] = useState([]);
   const [dialogType, setDialogType] = useState(null);
@@ -149,7 +150,9 @@ const Query_Build = () => {
       await geocollection.add({
         coordinates,
         photoUrl,
-        timestamp: firestore.FieldValue.serverTimestamp(),
+        timestamp: new Date().toLocaleString(),
+        username: username,
+        isConfirmed: false,
       });
 
       console.log('Rapor başarıyla kaydedildi!');
@@ -169,14 +172,14 @@ const Query_Build = () => {
     }
   };
   const openMakeReportDialog = async () => {
-    // if (!isAuth) {
-    //   return Toast.show({
-    //     type: 'error',
-    //     position: 'top',
-    //     text1: 'Hata',
-    //     text2: 'Lütfen giriş yapınız.',
-    //   });
-    // }
+    if (!isAuth) {
+      return Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Hata',
+        text2: 'Lütfen giriş yapınız.',
+      });
+    }
     setDialogType('makeReport');
     setisLoading(true);
     setReports([]);
@@ -278,7 +281,7 @@ const Query_Build = () => {
               return (
                 <Marker
                   key={index}
-                  title={'report' + index}
+                  title={'report ' + (index + 1)}
                   pinColor="red"
                   titleVisibility="adaptive"
                   coordinate={{latitude, longitude}}
@@ -428,8 +431,10 @@ const Query_Build = () => {
                     justifyContent: 'space-between',
                     flexDirection: 'row',
                   }}>
-                  <Paragraph>Ahmet Sayan</Paragraph>
-                  <Paragraph>12.03.2004</Paragraph>
+                  <Paragraph>{selectedReport?.username}</Paragraph>
+                  <Paragraph>
+                    {selectedReport?.timestamp.toString().split(',')[0]}
+                  </Paragraph>
                 </View>
 
                 <Image

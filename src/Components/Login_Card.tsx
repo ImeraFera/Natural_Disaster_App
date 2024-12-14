@@ -136,6 +136,7 @@ const Login_Card = () => {
                   onPress={handleSubmit}
                   mode="contained"
                   loading={isLoading}
+                  disabled={isLoading}
                   buttonColor="red">
                   GİRİŞ YAP
                 </Button>

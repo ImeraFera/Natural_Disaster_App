@@ -1,24 +1,15 @@
 import {View, Text, ColorValue, Image} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-// import Sidebar from './Components/Sidebar';
-import {
-  DrawerContentScrollView,
-  DrawerItem,
-  DrawerItemList,
-  createDrawerNavigator,
-} from '@react-navigation/drawer';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import {createStackNavigator} from '@react-navigation/stack';
-
-import auth from '@react-native-firebase/auth';
 
 import Home from './Home';
 
 import GiveHelp from './pages/HelpScreens/Give_Help';
 import GetHelp from './pages/HelpScreens/Get_Help';
 import HelpDetails from './pages/HelpScreens/Help_Details';
-import GiveHelpForm from './pages/HelpScreens/Give_Help_Form';
 import MissingDeclaration from './pages/HelpScreens/Missing_Declaration';
 import DeclarationSettings from './pages/HelpScreens/Declaration_Settings';
 import DeclarationDetails from './pages/HelpScreens/Declaration_Details';
@@ -52,12 +43,11 @@ import ProfileMain from './pages/ProfileScreens/Profile_Main';
 import Custom_Drawer_Content from './Components/Custom_Drawer_Content';
 import Toast from 'react-native-toast-message';
 
+import {useSelector} from 'react-redux';
+import All_Reports from './pages/GetInfoScreens/All_Reports';
+
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
-
-import {legacy_createStore as createStore} from 'redux';
-
-import {Provider, useSelector} from 'react-redux';
 
 const ProfileStack = () => {
   return (
@@ -118,11 +108,11 @@ const HelpStack = () => {
         component={HelpDetails}
         options={{}}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="GiveHelpFormScreen"
         component={GiveHelpForm}
         options={{}}
-      />
+      /> */}
     </Stack.Navigator>
   );
 };
@@ -220,6 +210,8 @@ const flagImg = () => (
 
 const MainApp = () => {
   const isAuth = useSelector(({user}) => user.isAuth);
+  const role = useSelector(({user}) => user.role);
+
   return (
     <>
       <NavigationContainer>
@@ -285,20 +277,6 @@ const MainApp = () => {
             }}
           />
 
-          {isAuth ? (
-            <Drawer.Screen
-              name="ProfileMain_Screen"
-              component={ProfileStack}
-              options={{
-                title: 'Profilim',
-                drawerIcon: ({focused}) => {
-                  let iconColor = focused ? 'red' : 'white';
-                  return createIcon('user-gear', iconColor);
-                },
-              }}
-            />
-          ) : null}
-
           <Drawer.Screen
             name="Guide_Screen"
             component={GuideStack}
@@ -343,21 +321,8 @@ const MainApp = () => {
               },
             }}
           />
-          {/* <Drawer.Screen name="Settings" component={Settings} options={{
-          title: 'Ayarlar',
-          drawerIcon: ({ focused }) => {
-            let iconColor = focused ? 'red' : 'white';
-            return createIcon('gear', iconColor);
-          },
-        }} /> */}
-          {/* <Drawer.Screen name="Account" component={Account} options={{
-          title: 'Hesabım',
-          drawerIcon: ({ focused }) => {
-            let iconColor = focused ? 'red' : 'white';
-            return createIcon('user-gear', iconColor);
-          },
-        }} /> */}
-          {isAuth ? null : (
+
+          {!isAuth ? (
             <>
               <Drawer.Screen
                 name="Login_Screen"
@@ -382,7 +347,35 @@ const MainApp = () => {
                 }}
               />
             </>
+          ) : null}
+
+          {isAuth === true && role === 'admin' && (
+            <Drawer.Screen
+              name="AllReports_Screen"
+              component={All_Reports}
+              options={{
+                title: 'Raporlamalar',
+                drawerIcon: ({focused}) => {
+                  let iconColor = focused ? 'red' : 'white';
+                  return createIcon('box-archive', iconColor);
+                },
+              }}
+            />
           )}
+
+          {isAuth ? (
+            <Drawer.Screen
+              name="ProfileMain_Screen"
+              component={ProfileStack}
+              options={{
+                title: 'Profilim',
+                drawerIcon: ({focused}) => {
+                  let iconColor = focused ? 'red' : 'white';
+                  return createIcon('user-gear', iconColor);
+                },
+              }}
+            />
+          ) : null}
         </Drawer.Navigator>
       </NavigationContainer>
       <Toast ref={ref => Toast.setRef(ref)} />
