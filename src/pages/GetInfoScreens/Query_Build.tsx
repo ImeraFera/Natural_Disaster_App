@@ -14,16 +14,18 @@ import {
 import {Formik} from 'formik';
 import MapView, {Marker} from 'react-native-maps';
 import axios from 'axios';
-const geocodeApiKey = '67260f5fb929a660736537xqte7b09a';
+// const geocodeApiKey = '67260f5fb929a660736537xqte7b09a';
 import firestore, {getFirestore} from '@react-native-firebase/firestore';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Toast from 'react-native-toast-message';
 import * as geofirestore from 'geofirestore';
 import {launchCamera} from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
 import {Image} from 'react-native-elements';
 import {getLocation} from '../../utils/getLocation';
+import {getAllHavocReports} from '../../redux/slices/appSlice';
 const Query_Build = () => {
+  const dispatch = useDispatch();
   const [region, setRegion] = useState({
     latitude: 41.6132807816993,
     longitude: 32.32117788484015,
@@ -33,7 +35,10 @@ const Query_Build = () => {
   const [isLoading, setisLoading] = useState(false);
   const [visibleDialog, setvisibleDialog] = useState(false);
   const isAuth = useSelector(({user}) => user.isAuth);
-  const username = useSelector(({user}) => user.name);
+  const name = useSelector(({user}) => user.name);
+  const lastName = useSelector(({user}) => user.lastName);
+  const uid = useSelector(({user}) => user.uid);
+
   const [userLocation, setUserLocation] = useState(null);
   const [reports, setReports] = useState([]);
   const [dialogType, setDialogType] = useState(null);
@@ -135,12 +140,22 @@ const Query_Build = () => {
 
       if (result.didCancel) {
         console.log('Kullanıcı fotoğraf çekmeyi iptal etti.');
-        return;
+        return Toast.show({
+          type: 'error',
+          position: 'top',
+          text1: 'Kayıt Hatası',
+          text2: 'Kayıt sırasında bir hata oluştu.',
+        });
       }
 
       if (result.errorMessage) {
         console.log('Hata:', result.errorMessage);
-        return;
+        return Toast.show({
+          type: 'error',
+          position: 'top',
+          text1: 'Kayıt Hatası',
+          text2: result.errorMessage,
+        });
       }
 
       const photoUri = result.assets[0].uri;
@@ -155,11 +170,16 @@ const Query_Build = () => {
         coordinates,
         photoUrl,
         timestamp: new Date().toLocaleString(),
-        username: username,
+        user: {
+          name: name,
+          lastName: lastName,
+          uid: uid,
+        },
         isConfirmed: false,
       });
 
       console.log('Rapor başarıyla kaydedildi!');
+      await dispatch(getAllHavocReports()).unwrap();
 
       Toast.show({
         type: 'success',

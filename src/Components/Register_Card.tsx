@@ -10,6 +10,7 @@ import {Formik} from 'formik';
 import {useDispatch, useSelector} from 'react-redux';
 import {register} from '../redux/slices/userSlice';
 import {validationSchema} from '../validationSchemas/RegisterSchema';
+import DatePicker from 'react-native-date-picker';
 
 const Register_Card = () => {
   const formInitialValues = {
@@ -22,6 +23,8 @@ const Register_Card = () => {
   };
   const [repeatPassword, setrepeatPassword] = useState('');
   const [isLoading, setisLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -36,7 +39,6 @@ const Register_Card = () => {
         text2: 'Şifreler uyuşmuyor!',
       });
     }
-    console.log(values);
     try {
       await dispatch(register(values)).unwrap();
 
@@ -49,12 +51,11 @@ const Register_Card = () => {
 
       navigation.navigate('Home_Screen');
     } catch (error) {
-      console.log('api error: ', error.message);
       Toast.show({
         type: 'error',
         position: 'top',
         text1: 'Kayıt Hatası',
-        text2: 'Kayıt sırasında bir hata oluştu.',
+        text2: error.message,
       });
     } finally {
       setisLoading(false);
@@ -62,7 +63,7 @@ const Register_Card = () => {
   };
 
   return (
-    <Card style={{width: '100%'}}>
+    <Card style={{width: '100%', display: 'flex'}}>
       <Formik
         initialValues={formInitialValues}
         validationSchema={validationSchema}
@@ -89,6 +90,30 @@ const Register_Card = () => {
                 activeOutlineColor="red"
                 value={values.lastName}
                 onChangeText={handleChange('lastName')}
+              />
+              <TextInput
+                label="Doğum Tarihi"
+                value={values.birthday}
+                textColor="black"
+                activeOutlineColor="red"
+                mode="outlined"
+                style={styles.input}
+                editable={true}
+                onPressIn={() => setOpen(true)}
+              />
+              <DatePicker
+                modal
+                open={open}
+                date={new Date(values.birthday || new Date())}
+                mode="date"
+                onConfirm={date => {
+                  setOpen(false);
+                  const formattedDate = date.toISOString().split('T')[0];
+                  handleChange('birthday')(formattedDate);
+                }}
+                onCancel={() => {
+                  setOpen(false);
+                }}
               />
               <TextInput
                 style={styles.input}

@@ -5,6 +5,6 @@ export const getLocation = () =>
     Geolocation.getCurrentPosition(
       position => resolve(position),
       error => reject(error),
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      {enableHighAccuracy: false, timeout: 30000, maximumAge: 10000},
     );
   });

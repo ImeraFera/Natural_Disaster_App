@@ -1,7 +1,12 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {View, TouchableOpacity, Alert} from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  Alert,
+  Platform,
+  PermissionsAndroid,
+} from 'react-native';
 import MapView, {Marker, Polygon} from 'react-native-maps';
-import Geolocation from '@react-native-community/geolocation';
 import styles from '../../styles/Assembly_Area';
 import {Button, Text} from 'react-native-paper';
 import * as geofirestore from 'geofirestore';
@@ -128,6 +133,21 @@ const geocollection = GeoFirestore.collection('assembly_areas');
 //   await geocollection.add();
 // };
 
+const checkLocationPermission = async () => {
+  if (Platform.OS === 'android') {
+    const granted = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+    if (!granted) {
+      const request = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      );
+      return request === PermissionsAndroid.RESULTS.GRANTED;
+    }
+    return true;
+  }
+  return true;
+};
 const Assembly_Area = () => {
   const [region, setRegion] = useState({
     latitude: 39.9334,
@@ -142,6 +162,15 @@ const Assembly_Area = () => {
   const mapRef = useRef(null);
 
   const findAssemblyAreas = async () => {
+    const hasPermission = await checkLocationPermission();
+    if (!hasPermission) {
+      Alert.alert(
+        'Konum İzni Gerekli',
+        'Toplanma alanlarını bulmak için konum izni vermeniz gerekiyor.',
+        [{text: 'Tamam'}],
+      );
+      return;
+    }
     setIsLoading(true);
     try {
       // await setDatas();
@@ -151,7 +180,7 @@ const Assembly_Area = () => {
       const query = geocollection
         .near({
           center: new firestore.GeoPoint(latitude, longitude),
-          radius: 2,
+          radius: 10,
         })
         .limit(3);
 

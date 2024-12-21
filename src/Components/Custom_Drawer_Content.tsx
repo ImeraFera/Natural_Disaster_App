@@ -12,6 +12,7 @@ const Custom_Drawer_Content = props => {
   let img = require('../img/user.png');
   const isAuth = useSelector(({user}) => user.isAuth);
   const name = useSelector(({user}) => user.name);
+  const lastName = useSelector(({user}) => user.lastName);
 
   return (
     <DrawerContentScrollView>
@@ -21,7 +22,7 @@ const Custom_Drawer_Content = props => {
         </View>
         <View style={styles.username_container}>
           <Text style={styles.username}>
-            {isAuth ? name : 'Lütfen Giriş Yapınız!'}
+            {isAuth ? name + ' ' + lastName : 'Lütfen Giriş Yapınız!'}
           </Text>
         </View>
       </View>

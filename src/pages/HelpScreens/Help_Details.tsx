@@ -1,6 +1,6 @@
 import {View, ScrollView, TouchableOpacity, Modal, Linking} from 'react-native';
 import React, {useState} from 'react';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {
   Text,
   Button,
@@ -10,6 +10,8 @@ import {
   PaperProvider,
 } from 'react-native-paper';
 const Help_Details = () => {
+  const route = useRoute();
+  const item = route.params;
   const navigation = useNavigation();
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -22,7 +24,7 @@ const Help_Details = () => {
   };
 
   const handleCallUser = () => {
-    Linking.openURL('tel:112');
+    Linking.openURL('tel:' + item.tel);
   };
 
   return (
@@ -54,15 +56,23 @@ const Help_Details = () => {
                   alignItems: 'center',
                   flexDirection: 'row',
                 }}>
-                <Text variant="titleMedium">Ahmet Furkan Sayan</Text>
-                <Text variant="bodyLarge">12/5/2003</Text>
+                <Text variant="titleMedium">
+                  {item.user.name + ' ' + item.user.lastName}
+                </Text>
+                <Text variant="bodyLarge">
+                  {new Date(
+                    item.disasterDate.seconds * 1000,
+                  ).toLocaleDateString()}
+                </Text>
               </View>
-              <Text variant="bodyLarge">5453321212</Text>
-              <Text variant="bodyLarge">5453321212</Text>
-              <Text variant="bodyLarge">5453321212</Text>
-              <Text variant="bodyLarge">5453321212</Text>
-              <Text variant="bodyLarge">5453321212</Text>
-              <Text variant="bodyLarge">5453321212</Text>
+              <Text variant="bodyMedium">
+                Hasar Durumu: {item.damageStatus}
+              </Text>
+              <Text variant="bodyLarge">Afet Türü: {item.disasterType}</Text>
+              <Text variant="bodyLarge">Adres: {item.address}</Text>
+              <Text variant="bodyLarge">Durum: {item.statusDefinition}</Text>
+              <Text variant="bodyLarge">Ek Bilgi: {item.additionalInfo}</Text>
+              <Text variant="bodyLarge">İletişim: {item.tel}</Text>
             </Card.Content>
             <Card.Actions>
               <Button onPress={() => navigation.goBack()}>İptal</Button>

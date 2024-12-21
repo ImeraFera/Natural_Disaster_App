@@ -6,19 +6,12 @@ import {
   Dialog,
   Card,
   IconButton,
-  Text,
   TextInput,
   PaperProvider,
   Portal,
-  MD3Colors,
 } from 'react-native-paper';
 import DatePicker from 'react-native-date-picker';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {Picker} from '@react-native-picker/picker';
-import iller from '../../tempData/iller.json';
-import ilceler from '../../tempData/ilceler.json';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {Formik} from 'formik';
@@ -35,10 +28,15 @@ const Profile_Main = () => {
   const mail = useSelector(({user}) => user.mail);
   const district = useSelector(({user}) => user.district);
   const province = useSelector(({user}) => user.province);
+  const lastName = useSelector(({user}) => user.lastName);
+  const image = useSelector(({user}) => user.image);
+
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
-  const [kullaniciResmi, setkullaniciResmi] = useState(null);
-
+  const [userImage, setUserImage] = useState(image);
+  const [visible, setVisible] = useState(false);
+  const showDialog = () => setVisible(true);
+  const hideDialog = () => setVisible(false);
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
 
@@ -46,6 +44,10 @@ const Profile_Main = () => {
     setLoading(true);
 
     try {
+      if (userImage) {
+        values.image = userImage;
+      }
+
       await dispatch(updateUser(values)).unwrap();
 
       Toast.show({
@@ -81,7 +83,7 @@ const Profile_Main = () => {
   const resimSec = async () => {
     const result = await launchImageLibrary(options);
     if (!result.didCancel && result.assets && result.assets.length > 0) {
-      setkullaniciResmi(result.assets[0].uri);
+      setUserImage(result.assets[0].uri);
       hideDialog();
     }
   };
@@ -89,18 +91,10 @@ const Profile_Main = () => {
   const kameraAc = async () => {
     const result = await launchCamera();
     if (!result.didCancel && result.assets && result.assets.length > 0) {
-      setkullaniciResmi(result.assets[0].uri);
+      setUserImage(result.assets[0].uri);
       hideDialog();
     }
   };
-
-  const [visible, setVisible] = useState(false);
-  const showDialog = () => setVisible(true);
-  const hideDialog = () => setVisible(false);
-
-  //   if (loading) {
-  //     return <ActivityIndicator size="large" color="#0000ff" />;
-  //   }
 
   return (
     <PaperProvider>
@@ -139,9 +133,7 @@ const Profile_Main = () => {
             <Card.Cover
               style={{width: 100, height: 100, backgroundColor: '#d9d9d9'}}
               source={
-                kullaniciResmi
-                  ? {uri: kullaniciResmi}
-                  : require('../../img/user.png')
+                userImage ? {uri: userImage} : require('../../img/user.png')
               }
             />
             <Button
@@ -168,6 +160,8 @@ const Profile_Main = () => {
               province: province || '',
               tel: tel || '',
               name: name || '',
+              lastName: lastName || '',
+              image: userImage || '',
             }}
             onSubmit={handleUpdate}>
             {({handleChange, handleSubmit, values}) => (
@@ -175,11 +169,12 @@ const Profile_Main = () => {
                 <Card.Content style={{marginVertical: '2%', padding: 5}}>
                   <TextInput
                     label="Ad-Soyad"
-                    value={values.name}
+                    value={values.name + ' ' + values.lastName}
                     activeOutlineColor="#5A89FF"
                     onChangeText={handleChange('name')}
                     mode="outlined"
                     style={styles.input}
+                    editable={false}
                     right={<TextInput.Icon icon="rename-box" />}
                   />
                   <TextInput
@@ -195,6 +190,7 @@ const Profile_Main = () => {
                     label="Doğum Tarihi"
                     textColor="black"
                     activeOutlineColor="#5A89FF"
+                    editable={false}
                     value={values.birthday}
                     right={
                       <TextInput.Icon
@@ -284,10 +280,10 @@ const Profile_Main = () => {
                 </Card.Content>
                 <Card.Actions style={{alignSelf: 'center', margin: '1%'}}>
                   <Button
-                    style={{backgroundColor: '#5A89FF'}}
                     mode="contained"
                     textColor="white"
                     loading={loading}
+                    disabled={loading}
                     onPress={handleSubmit}>
                     KAYDET
                   </Button>

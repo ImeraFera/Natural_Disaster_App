@@ -52,13 +52,9 @@ const Login_Card = () => {
     }
   };
 
-  const sifremiUnuttum = () => {
-    console.log('Şifremi Unuttum butonuna tıklandı');
-  };
-
-  const goToRegister = () => {
-    navigation.navigate('Register_Screen');
-  };
+  // const sifremiUnuttum = () => {
+  //   console.log('Şifremi Unuttum butonuna tıklandı');
+  // };
 
   return (
     <>
@@ -114,16 +110,11 @@ const Login_Card = () => {
                   visible={touched.mail && errors.mail ? true : false}>
                   {errors.password}
                 </HelperText>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Checkbox status={'unchecked'} color="red" />
-                  <Text variant="labelLarge" style={{textAlign: 'left'}}>
-                    Beni Hatırla
-                  </Text>
-                </View>
+
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   <Text variant="labelSmall">Hesabın Yok Mu?</Text>
                   <Button
-                    onPress={goToRegister}
+                    onPress={() => navigation.navigate('Register_Screen')}
                     labelStyle={{}}
                     mode="text"
                     textColor="red">

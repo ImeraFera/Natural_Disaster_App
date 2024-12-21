@@ -2,13 +2,13 @@ import {View, ScrollView} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, Button, Card, Text} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
-import {getAllHavocReports} from '../../redux/slices/userSlice';
+import {getAllHavocReports} from '../../redux/slices/appSlice';
 import Report_Card from '../../Components/Report_Card';
 
 const All_Reports = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const allReports = useSelector(({user}) => user.allReports);
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
+  const allReports = useSelector(({app}) => app.allReports);
 
   useEffect(() => {
     setIsLoading(true);
@@ -17,7 +17,7 @@ const All_Reports = () => {
       setIsLoading(false);
     };
     fetchAllHavocReports();
-  }, []);
+  }, [dispatch]);
 
   if (isLoading) {
     return <ActivityIndicator></ActivityIndicator>;

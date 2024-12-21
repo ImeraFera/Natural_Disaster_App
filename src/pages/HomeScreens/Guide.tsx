@@ -1,61 +1,60 @@
-import { View, Text, ActivityIndicator } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import {View, Text, ActivityIndicator} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import styles from '../../styles/Guide';
-import firestore from '@react-native-firebase/firestore';
 import Guide_Card from '../../Components/Guide_Card';
-
-const images = {
-    Deprem: require('../../img/deprem.png'),
-    Sel: require('../../img/sel.png'),
-    Yangın: require('../../img/yangin.png'),
-    Çığ: require('../../img/cig.png'),
-    Heyelan: require('../../img/heyelan.png'),
-
-};
-
+const card_fields = [
+  {
+    card_name: 'Deprem',
+    card_img: require('../../img/deprem.png'),
+    card_link: 'EarthquakeScreen',
+    card_color: '#FFA500',
+  },
+  {
+    card_name: 'Sel',
+    card_img: require('../../img/sel.png'),
+    card_link: 'FloodScreen',
+    card_color: '#1C78AD',
+  },
+  {
+    card_name: 'Çığ',
+    card_img: require('../../img/cig.png'),
+    card_link: 'AvalancheScreen',
+    card_color: '#38B6FF',
+  },
+  {
+    card_name: 'Heyelan',
+    card_img: require('../../img/heyelan.png'),
+    card_link: 'LandslideScreen',
+    card_color: '#895914',
+  },
+  {
+    card_name: 'Yangın',
+    card_img: require('../../img/yangin.png'),
+    card_link: 'FireScreen',
+    card_color: 'red',
+  },
+];
 
 const Guide = () => {
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
-        const fetchGuide = async () => {
-            try {
-                const snapshot = await firestore().collection('disaster_guides').get();
-                const fetchedData = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-                console.log(fetchedData);
-                setData(fetchedData);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching data: ', error);
-                setLoading(false);
-            }
-        };
+  if (isLoading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
 
-        fetchGuide();
-    }, []);
-
-    if (loading) {
-        return <ActivityIndicator size="large" color="#0000ff" />;
-    }
-
-    return (
-
-        <View style={styles.container}>
-            {data.map((item, index) => (
-                <Guide_Card
-                    key={item.id}
-                    card_name={item.title}
-                    card_color={item.color}
-                    card_img={images[item.title]}
-                    card_link={item.cardLink}
-                />
-            ))}
-        </View>
-    );
+  return (
+    <View style={styles.container}>
+      {card_fields.map((item, index) => (
+        <Guide_Card
+          key={index}
+          card_name={item.card_name}
+          card_color={item.card_color}
+          card_img={item.card_img}
+          card_link={item.card_link}
+        />
+      ))}
+    </View>
+  );
 };
 
 export default Guide;

@@ -3,10 +3,12 @@ import React, {useEffect, useState} from 'react';
 import {Button, Card, Text} from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch} from 'react-redux';
-import {getAllHavocReports} from '../redux/slices/userSlice';
+import {getAllHavocReports} from '../redux/slices/appSlice';
+import Toast from 'react-native-toast-message';
 
 const Report_Card = ({report}) => {
-  const {isConfirmed, username, timestamp, photoUrl, coordinates, id} = report;
+  const {isConfirmed, username, timestamp, photoUrl, coordinates, id, user} =
+    report;
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
@@ -20,8 +22,20 @@ const Report_Card = ({report}) => {
       });
 
       await dispatch(getAllHavocReports()).unwrap();
+      Toast.show({
+        type: 'success',
+        position: 'top',
+        text1: 'İşlem Başarılı',
+        text2: 'Rapor başarıyla onaylandı.',
+      });
     } catch (error) {
       console.log(error);
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'İşlem Başarısız',
+        text2: 'Rapor onaylama başarısız !',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -32,19 +46,47 @@ const Report_Card = ({report}) => {
     try {
       await firestore().collection('havoc_reports').doc(id).delete();
       await dispatch(getAllHavocReports()).unwrap();
-      console.log(`Document with ID: ${id} has been deleted.`);
+      Toast.show({
+        type: 'success',
+        position: 'top',
+        text1: 'İşlem Başarılı',
+        text2: 'Rapor başarıyla silindi.',
+      });
     } catch (error) {
       console.log(error);
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'İşlem Başarısız',
+        text2: 'Rapor silinirken bir hata oluştu.',
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   const deleteReport = async () => {
+    setIsLoading(true);
     try {
-      console.log('silindi');
+      await firestore().collection('havoc_reports').doc(id).delete();
+      await dispatch(getAllHavocReports()).unwrap();
+      console.log(`Document with ID: ${id} has been deleted.`);
+      Toast.show({
+        type: 'success',
+        position: 'top',
+        text1: 'İşlem Başarılı',
+        text2: 'Rapor başarıyla silindi.',
+      });
     } catch (error) {
       console.log(error);
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'İşlem Başarısız',
+        text2: 'Rapor silinirken bir hata oluştu.',
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -62,7 +104,9 @@ const Report_Card = ({report}) => {
             alignItems: 'center',
             margin: '2%',
           }}>
-          <Text variant="titleLarge">{username}</Text>
+          <Text variant="titleLarge">
+            {user.name + ' ' + user.lastName.substring(0, 1) + '.'}
+          </Text>
           <Text variant="bodyMedium">{timestamp.split(',')[0]}</Text>
         </View>
       </Card.Content>

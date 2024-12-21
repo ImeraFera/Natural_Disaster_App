@@ -1,4 +1,4 @@
-import {View, ScrollView} from 'react-native';
+import {View, ScrollView, Image} from 'react-native';
 import React, {useState} from 'react';
 import {Picker} from '@react-native-picker/picker';
 import DatePicker from 'react-native-date-picker';
@@ -11,7 +11,9 @@ import auth from '@react-native-firebase/auth';
 import Toast from 'react-native-toast-message';
 import {useNavigation} from '@react-navigation/native';
 import * as Yup from 'yup';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {createMissingForm} from '../../redux/slices/userSlice';
+import {launchImageLibrary} from 'react-native-image-picker';
 
 const DeclarationSchema = Yup.object().shape({
   name: Yup.string().required('Bu alan zorunludur'),
@@ -21,20 +23,19 @@ const DeclarationSchema = Yup.object().shape({
   date: Yup.string().required('Bu alan zorunludur'),
   details: Yup.string().required('Bu alan zorunludur'),
   contact1: Yup.string().required('Bu alan zorunludur'),
-  contact2: Yup.string()
-    .email('Geçersiz email adresi')
-    .required('Bu alan zorunludur'),
   address: Yup.string().required('Bu alan zorunludur'),
   prize: Yup.string(),
 });
 
 const Declaration_Settings = () => {
+  const dispatch = useDispatch();
+
   const isAuth = useSelector(({user}) => user.isAuth);
-
-  console.log(isAuth);
   const navigation = useNavigation();
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [imageUri, setImageUri] = useState(null);
   const [open, setOpen] = useState(false);
+
   if (!isAuth) {
     navigation.goBack();
 
@@ -46,46 +47,26 @@ const Declaration_Settings = () => {
     });
     return;
   }
-  const handlePost = async values => {
-    const {
-      name,
-      gender,
-      age,
-      lastPlace,
-      date,
-      details,
-      contact1,
-      contact2,
-      address,
-      prize,
-    } = values;
-    const userId = auth().currentUser?.uid;
-    try {
-      await firestore().collection('missing_people').add({
-        name,
-        gender,
-        age,
-        lastPlace,
-        date,
-        details,
-        contact1,
-        contact2,
-        address,
-        prize,
-        owner: userId,
-      });
 
-      Toast.show({
-        type: 'success',
-        position: 'top',
-        text1: 'İşlem Başarılı',
-        text2: 'Kayıp ilanınız eklendi.',
-      });
+  const selectImage = setFieldValue => {
+    const options = {
+      mediaType: 'photo',
+      quality: 1,
+    };
+    launchImageLibrary(options, response => {
+      if (response.assets && response.assets.length > 0) {
+        setImageUri(response.assets[0].uri);
+        setFieldValue('image', response.assets[0].uri);
+      }
+    });
+  };
 
-      navigation.navigate('Home_Screen');
-    } catch (error) {
-      console.error('İlan kaydedilirken bir hata oluştu:', error);
-    }
+  const handlePost = async (values, {resetForm}) => {
+    setIsLoading(true);
+    await dispatch(createMissingForm(values)).unwrap();
+    resetForm();
+    setIsLoading(false);
+    navigation.goBack();
   };
 
   return (
@@ -102,11 +83,11 @@ const Declaration_Settings = () => {
               date: '',
               details: '',
               contact1: '',
-              contact2: '',
               address: '',
               prize: '',
+              image: '',
             }}
-            validationSchema={DeclarationSchema}
+            // validationSchema={DeclarationSchema}
             onSubmit={handlePost}>
             {({
               handleChange,
@@ -135,8 +116,8 @@ const Declaration_Settings = () => {
                     setFieldValue('gender', itemValue)
                   }>
                   <Picker.Item label="Kayıp Kişinin Cinsiyeti" value="" />
-                  <Picker.Item label="Kadın" value="Woman" />
-                  <Picker.Item label="Erkek" value="Man" />
+                  <Picker.Item label="Kadın" value="Kadın" />
+                  <Picker.Item label="Erkek" value="Erkek" />
                 </Picker>
                 {touched.gender && errors.gender && (
                   <Text style={{color: 'red'}}>{errors.gender}</Text>
@@ -217,17 +198,7 @@ const Declaration_Settings = () => {
                 {touched.contact1 && errors.contact1 && (
                   <Text style={{color: 'red'}}>{errors.contact1}</Text>
                 )}
-                <TextInput
-                  activeOutlineColor="red"
-                  mode="outlined"
-                  label="Email Adresinizi Giriniz"
-                  numberOfLines={1}
-                  value={values.contact2}
-                  onChangeText={handleChange('contact2')}
-                />
-                {touched.contact2 && errors.contact2 && (
-                  <Text style={{color: 'red'}}>{errors.contact2}</Text>
-                )}
+
                 <TextInput
                   activeOutlineColor="red"
                   mode="outlined"
@@ -238,6 +209,28 @@ const Declaration_Settings = () => {
                 />
                 {touched.address && errors.address && (
                   <Text style={{color: 'red'}}>{errors.address}</Text>
+                )}
+                <Button
+                  style={{
+                    margin: '2%',
+                  }}
+                  mode="outlined"
+                  onPress={() => selectImage(setFieldValue)}>
+                  Kayıp Kişinin Resmi
+                </Button>
+                {imageUri && (
+                  <View
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      width: '100%',
+                      alignItems: 'center',
+                    }}>
+                    <Image
+                      source={{uri: imageUri}}
+                      style={{width: 50, height: 75}}
+                    />
+                  </View>
                 )}
                 <TextInput
                   activeOutlineColor="red"
@@ -257,6 +250,8 @@ const Declaration_Settings = () => {
                   mode="contained"
                   buttonColor="red"
                   textColor="white"
+                  loading={isLoading}
+                  disabled={isLoading}
                   onPress={handleSubmit}>
                   Kaydı Tamamla
                 </Button>
