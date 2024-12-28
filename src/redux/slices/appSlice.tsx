@@ -59,7 +59,10 @@ export const getDisasterHistories = createAsyncThunk(
   'app/getDisasterHistories',
   async () => {
     try {
-      const snapshot = await firestore().collection('disaster_histories').get();
+      const snapshot = await firestore()
+        .collection('disaster_histories')
+        .orderBy('date', 'asc')
+        .get();
       const histories = snapshot.docs.map(doc => doc.data());
 
       console.log(histories);
