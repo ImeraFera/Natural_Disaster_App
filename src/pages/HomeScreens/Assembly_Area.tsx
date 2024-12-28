@@ -13,6 +13,7 @@ import * as geofirestore from 'geofirestore';
 import firestore from '@react-native-firebase/firestore';
 import 'firebase/firestore';
 import {getLocation} from '../../utils/getLocation';
+import Toast from 'react-native-toast-message';
 
 const GeoFirestore = geofirestore.initializeApp(firestore());
 const geocollection = GeoFirestore.collection('assembly_areas');
@@ -204,6 +205,12 @@ const Assembly_Area = () => {
       });
     } catch (error) {
       console.log(error);
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'İşlem Başarısız !',
+        text2: 'Lütfen konumunuzu ve bağlantınızı kontrol ediniz !',
+      });
     } finally {
       setIsLoading(false);
     }

@@ -56,7 +56,11 @@ const Help_Details = () => {
                   alignItems: 'center',
                   flexDirection: 'row',
                 }}>
-                <Text variant="titleMedium">
+                <Text
+                  variant="titleMedium"
+                  style={{
+                    fontWeight: 'bold',
+                  }}>
                   {item.user.name + ' ' + item.user.lastName}
                 </Text>
                 <Text variant="bodyLarge">
@@ -65,14 +69,49 @@ const Help_Details = () => {
                   ).toLocaleDateString()}
                 </Text>
               </View>
-              <Text variant="bodyMedium">
-                Hasar Durumu: {item.damageStatus}
+              <Text
+                variant="bodyMedium"
+                style={{
+                  fontWeight: 'bold',
+                }}>
+                Hasar Durumu: <Text>{item.damageStatus}</Text>
               </Text>
-              <Text variant="bodyLarge">Afet Türü: {item.disasterType}</Text>
-              <Text variant="bodyLarge">Adres: {item.address}</Text>
-              <Text variant="bodyLarge">Durum: {item.statusDefinition}</Text>
-              <Text variant="bodyLarge">Ek Bilgi: {item.additionalInfo}</Text>
-              <Text variant="bodyLarge">İletişim: {item.tel}</Text>
+              <Text
+                variant="bodyMedium"
+                style={{
+                  fontWeight: 'bold',
+                }}>
+                Afet Türü:
+                <Text> {item.disasterType}</Text>
+              </Text>
+              <Text
+                variant="bodyMedium"
+                style={{
+                  fontWeight: 'bold',
+                }}>
+                Adres: <Text>{item.address}</Text>
+              </Text>
+              <Text
+                variant="bodyMedium"
+                style={{
+                  fontWeight: 'bold',
+                }}>
+                Durum: <Text>{item.statusDefinition}</Text>
+              </Text>
+              <Text
+                variant="bodyMedium"
+                style={{
+                  fontWeight: 'bold',
+                }}>
+                Ek Bilgi: <Text>{item.additionalInfo}</Text>
+              </Text>
+              <Text
+                variant="bodyMedium"
+                style={{
+                  fontWeight: 'bold',
+                }}>
+                İletişim: <Text>{item.tel}</Text>
+              </Text>
             </Card.Content>
             <Card.Actions>
               <Button onPress={() => navigation.goBack()}>İptal</Button>

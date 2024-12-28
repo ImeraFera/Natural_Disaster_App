@@ -58,7 +58,7 @@ const Declaration_Details_Card = () => {
         <Text variant="titleLarge">
           Cinsiyet:{' '}
           <Text style={{fontWeight: 'bold'}}>
-            {item.gender == 'Man' ? 'Erkek' : 'Kadın'}
+            {item.gender === 'Erkek' ? 'Erkek' : 'Kadın'}
           </Text>
         </Text>
         <Divider />
