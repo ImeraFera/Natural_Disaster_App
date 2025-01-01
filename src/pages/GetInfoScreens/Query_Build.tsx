@@ -14,7 +14,6 @@ import {
 import {Formik} from 'formik';
 import MapView, {Marker} from 'react-native-maps';
 import axios from 'axios';
-// const geocodeApiKey = '67260f5fb929a660736537xqte7b09a';
 import firestore, {getFirestore} from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
 import Toast from 'react-native-toast-message';
