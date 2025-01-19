@@ -96,7 +96,6 @@ const Query_Build = () => {
     try {
       const coords = await getLocation();
       const {latitude, longitude} = coords.coords;
-
       const query = GeoFirestore.collection('havoc_reports')
         .near({
           center: new firestore.GeoPoint(latitude, longitude),
