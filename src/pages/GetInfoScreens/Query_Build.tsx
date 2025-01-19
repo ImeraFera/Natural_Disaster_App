@@ -1,4 +1,4 @@
-import {View, Text, ScrollView} from 'react-native';
+import {View, Text, ScrollView, Keyboard} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import styles from '../../styles/Query_Builder';
 import {validationSchema} from '../../validationSchemas/QueryBuildSchema';
@@ -14,7 +14,6 @@ import {
 import {Formik} from 'formik';
 import MapView, {Marker} from 'react-native-maps';
 import axios from 'axios';
-// const geocodeApiKey = '67260f5fb929a660736537xqte7b09a';
 import firestore, {getFirestore} from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
 import Toast from 'react-native-toast-message';
@@ -45,8 +44,9 @@ const Query_Build = () => {
   const [selectedReport, setSelectedReport] = useState(null);
   const mapRef = useRef(null);
 
-  const queryByAddress = async values => {
+  const queryByAddress = async (values, {resetForm}) => {
     setisLoading(true);
+    Keyboard.dismiss();
 
     const {province, district, street, neighborhood} = values;
     const address =
@@ -84,6 +84,7 @@ const Query_Build = () => {
     } catch (error) {
       console.log(error);
     } finally {
+      resetForm();
       setisLoading(false);
     }
   };
@@ -91,6 +92,7 @@ const Query_Build = () => {
   const queryByLocation = async () => {
     setisLoading(true);
     const GeoFirestore = geofirestore.initializeApp(firestore());
+
     try {
       const coords = await getLocation();
       const {latitude, longitude} = coords.coords;
@@ -104,6 +106,7 @@ const Query_Build = () => {
 
       const results = await query.get();
       const reports = results.docs.map(doc => doc.data());
+
       setReports(reports);
 
       mapRef.current.animateToRegion(
@@ -352,6 +355,7 @@ const Query_Build = () => {
                   handleChange,
                   handleSubmit,
                   handleBlur,
+                  resetForm,
                   values,
                   errors,
                   touched,

@@ -194,11 +194,11 @@ const Profile_Main = () => {
                     value={values.birthday}
                     right={
                       <TextInput.Icon
-                        onPress={() => setOpen(true)}
+                        // onPress={() => setOpen(true)}
                         icon="calendar"
                       />
                     }
-                    editable={true}
+                    editable={false}
                     mode="outlined"
                     style={styles.input}
                   />
